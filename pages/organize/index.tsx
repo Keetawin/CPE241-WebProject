@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
+import organize from "./organize_mock"; // Replace with your actual event data
 
 export default function Organize() {
   let [isOpen, setIsOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Organize() {
   function openModal() {
     setIsOpen(true);
   }
+
   return (
     <main>
       <div className="container mx-auto px-10">
@@ -27,15 +29,18 @@ export default function Organize() {
             </div>
           </div>
           <div className="grid  grid-cols-3 gap-8 w-full h-full mx-10 ">
-            <Link
-              className="px-4 py-12 border border-gray-200 rounded-lg shadow bg-white hover:bg-slate-50"
-              href="#"
-            >
-              <h5 className="mb-2 text-2xl font-bold tracking-tight text-[#060047]">
-                Bonsai
-              </h5>
-              <p className="text-gray-500">2 Events</p>
-            </Link>
+            {organize.map((event) => (
+              <Link
+                className="px-4 py-12 border border-gray-200 rounded-lg shadow bg-white hover:bg-slate-50"
+                key={event.id}
+                href={`/organize/${event.id}`}
+              >
+                <h5 className="mb-2 text-2xl font-bold tracking-tight text-[#060047]">
+                  {event.title}
+                </h5>
+                <p className="text-gray-500">{event.eventCount} Events</p>
+              </Link>
+            ))}
             <button
               type="button"
               onClick={openModal}

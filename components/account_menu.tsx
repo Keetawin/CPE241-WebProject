@@ -25,8 +25,8 @@ const MenuBar = () => {
             </li>
 
             <li>
-              <a
-                href="#"
+              <Link
+                href="/users/voucher"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100 dark:hover:bg-slate-100"
               >
                 <svg
@@ -44,11 +44,11 @@ const MenuBar = () => {
                 <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
                   Vouchers
                 </span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                href="/users/follow_event"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100"
               >
                 <svg
@@ -66,11 +66,11 @@ const MenuBar = () => {
                 <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
                   Follow Event
                 </span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                href="/organize"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100"
               >
                 <svg
@@ -88,11 +88,11 @@ const MenuBar = () => {
                 <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
                   Organize
                 </span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                href="/users/setting"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100"
               >
                 <svg
@@ -110,7 +110,7 @@ const MenuBar = () => {
                 <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
                   Settings
                 </span>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
