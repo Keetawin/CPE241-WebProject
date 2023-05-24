@@ -152,7 +152,7 @@ export default function Navbar() {
                           Create Event
                         </Link>
                         <Link
-                          href="#"
+                          href="/users/setting"
                           className="popover-dropdown-item min-w-full"
                         >
                           Account settings
