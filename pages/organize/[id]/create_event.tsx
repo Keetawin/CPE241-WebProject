@@ -1,4 +1,8 @@
-import React from "react";
+import * as React from "react";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers-pro";
+import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers-pro";
 
 export default function CreateEvent() {
   return (
@@ -28,16 +32,36 @@ export default function CreateEvent() {
               </div>
               <div className="mb-5">
                 <label
-                  htmlFor="email"
+                  htmlFor="event_type"
                   className="mb-3 block text-base font-medium text-[#060047]"
                 >
-                  Email Address
+                  Event Type
+                </label>
+                <select
+                  name="event_type"
+                  id="event_type_id"
+                  className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                >
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                  <option value="option3">Option 3</option>
+                </select>
+              </div>
+
+              <div className="flex justify-between mb-5">Date Picker</div>
+
+              <div className="mb-5">
+                <label
+                  htmlFor="location"
+                  className="mb-3 block text-base font-medium text-[#060047]"
+                >
+                  Location
                 </label>
                 <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="example@domain.com"
+                  type="text"
+                  name="location"
+                  id="location"
+                  placeholder="Enter Your Location"
                   className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
                 />
               </div>
