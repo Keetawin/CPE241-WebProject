@@ -114,15 +114,15 @@ export default function Navbar() {
               </span>
             </Link>
           )}
-          {session?.user.user_id && (
+          {session?.user?.user_id && (
             <Popover className="relative">
               {({ open }) => (
                 <>
                   <Popover.Button className="bg-gray-800 text-white px-3 py-2 rounded-md flex items-center justify-center">
                     <Image
                       className="rounded-full"
-                      src={session.user?.image}
-                      alt={session.user?.name}
+                      src={session?.user?.image}
+                      alt={session?.user?.name}
                       width={24}
                       height={24}
                     />

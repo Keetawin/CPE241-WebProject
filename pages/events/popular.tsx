@@ -17,7 +17,7 @@ export default function AllEventsPopular() {
 
   useEffect(() => {
     axios
-      .get<{ events: Event[] }>("https://ticketapi.fly.dev/get_event")
+      .get<Event[]>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
         setEvents(response.data);
         setLoading(false);

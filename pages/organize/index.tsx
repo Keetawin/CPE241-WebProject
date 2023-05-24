@@ -6,9 +6,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import organize from "./organize_mock"; // Replace with your actual event data
 import axios from "axios";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import { GetServerSideProps } from 'next';
 
-export default function Organize() {
+export default function Organize({ userOrganize }) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [organizeData, setOrganizeData] = useState({
@@ -36,7 +37,7 @@ export default function Organize() {
     const { name, telephone, website } = organizeData;
 
     const organizeDataPayload = {
-      user_id: session?.user?.id, // Use the user ID from the session
+      user_id: session?.user?.user_id, // Use the user ID from the session
       name: name,
       tel: telephone,
       website: website,
@@ -55,6 +56,7 @@ export default function Organize() {
       console.error(error);
     }
   };
+  // console.log(session, userOrganize)
 
   return (
     <main>
@@ -68,7 +70,7 @@ export default function Organize() {
             </div>
           </div>
           <div className="grid  grid-cols-3 gap-8 w-full h-full mx-10 ">
-            {organize.map((event) => (
+            {userOrganize.map((event) => (
               <Link
                 className="px-4 py-12 border border-gray-200 rounded-lg shadow bg-white hover:bg-slate-50"
                 key={event.id}
@@ -212,3 +214,30 @@ export default function Organize() {
     </main>
   );
 }
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context)
+  // console.log("test", session)
+  const user_id = session?.user?.user_id;
+  // console.log(user_id)
+
+  try {
+    const response = await axios.get(
+      `https://ticketapi.fly.dev/get_user_organize?user_id=${user_id}`
+    );
+    const userOrganize = response.data;
+
+    return {
+      props: {
+        userOrganize,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      props: {
+        userOrganize: null, // or handle error case as desired
+      },
+    };
+  }
+};

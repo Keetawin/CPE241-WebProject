@@ -13,7 +13,7 @@ export default function EventCard({
 }: Props) {
   return (
     <main>
-      <div className="border border-gray-300 rounded-lg shadow-sm min-h-[425px]">
+      <div className="border border-gray-300 rounded-lg shadow-sm min-h-[425px] w-[200px]">
         <div className="relative h-[250px]">
           <img
             className="w-full h-full object-cover object-center rounded-t-lg aspect-w-4 aspect-h-3"
