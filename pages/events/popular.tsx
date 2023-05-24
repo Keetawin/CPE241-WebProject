@@ -19,13 +19,13 @@ export default function AllEventsPopular() {
     axios
       .get<{ events: Event[] }>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
-        setEvents(response.data.events);
+        setEvents(response.data);
         setLoading(false);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  console.log(events);
+  // console.log(events);
 
   return (
     <main>

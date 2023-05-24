@@ -66,6 +66,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
+  // console.log(session)
 
   const handleSignOut = async () => {
     await router.push("/");
@@ -80,7 +81,7 @@ export default function Navbar() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
-            <img className="h-8 w-auto" src="/brand.svg" alt="" />
+            <img className="h-10 w-auto" src="/brand.svg" alt="" />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -93,8 +94,14 @@ export default function Navbar() {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <div className="flex  mr-10 justify-center align-middle mt-2">
+            <Link href="/organize" >
+              <span className=" font-semibold text-xl text-white">
+                Organize
+              </span>
+            </Link>
+          </div>
           {!session && (
             <Link
               href="#"
@@ -107,7 +114,7 @@ export default function Navbar() {
               </span>
             </Link>
           )}
-          {session && (
+          {session?.user.user_id && (
             <Popover className="relative">
               {({ open }) => (
                 <>

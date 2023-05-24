@@ -4,6 +4,8 @@ import data from "../api/mock_event.json";
 import Image from "next/image";
 import { useState } from "react";
 import React from "react";
+import axios from "axios";
+
 
 type Event = {
   event_id: number;
@@ -31,13 +33,14 @@ const ticketTypes = [
 const EventDetail = ({ event }: Props) => {
   const [selectedTickets, setSelectedTickets] = useState(ticketTypes);
 
-  const handleIncrement = (ticketTypeIndex) => {
+
+  const handleIncrement = (ticketTypeIndex: number) => {
     const updatedTickets = [...selectedTickets];
     updatedTickets[ticketTypeIndex].quantity++;
     setSelectedTickets(updatedTickets);
   };
 
-  const handleDecrement = (ticketTypeIndex) => {
+  const handleDecrement = (ticketTypeIndex: number) => {
     const updatedTickets = [...selectedTickets];
     const currentQuantity = updatedTickets[ticketTypeIndex].quantity;
     if (currentQuantity > 0) {
@@ -57,15 +60,20 @@ const EventDetail = ({ event }: Props) => {
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
+  const { query } = router;
+  const eventId = query.id;
+  console.log(query)
   return (
     <div className=" container mx-auto">
       <div className=" flex flex-col md:flex-row my-10">
         <div className="w-1/2 flex justify-center">
+          {event.poster &&
           <img
             className="inset-0 object-cover md:w-1/2 md:h-[50vh]"
             src={event.poster}
             alt="event poster"
           />
+          }
         </div>
         <div>
           <div className="flex gap-10">
@@ -93,20 +101,7 @@ const EventDetail = ({ event }: Props) => {
       <div className="container mx-auto px-24">
         <h1 className=" text-3xl font-bold text-[#060047]">Description</h1>
         <p className="text-lg py-4 md:px-24">
-          Lorem ipsum dolor sit amet consectetur. Viverra nec sit lorem velit
-          quam amet. Fermentum orci tempus blandit rutrum lorem mattis purus
-          massa. Sodales sapien enim dui in mattis enim fames. Vitae convallis
-          eget in amet aliquam diam adipiscing. Eu est neque ut aliquet
-          ultricies neque euismod quis dictumst. Felis tortor arcu neque massa
-          nunc urna dignissim amet tempor. A quisque feugiat dolor laoreet
-          mattis purus odio laoreet. Auctor id elit amet convallis mi at ut.
-          Consequat curabitur augue scelerisque ut nunc morbi tincidunt. Congue
-          pharetra tortor pretium enim leo enim id. Facilisis ullamcorper dolor
-          blandit mauris est elit nascetur facilisis. Diam urna varius odio
-          convallis adipiscing. Magna lobortis vitae purus integer maecenas
-          dolor nec. Senectus sem laoreet velit ipsum in et neque tristique
-          mauris. Bibendum ipsum lorem et convallis tortor lorem gravida
-          fermentum risus. Blandit non sagittis aliquam.
+          {event.event_description}
         </p>
         <h1 className=" text-3xl font-bold text-[#060047]">Tickets</h1>
         <div className="flex gap-8 px-2 py-4">
@@ -186,11 +181,23 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const event = data.find(
-    (item) => item.event_id === parseInt(params?.id as string)
-  );
-  if (!event) {
+  try {
+    const eventId = params?.id; // Assuming you have a dynamic route parameter named "id"
+    const response = await axios.get(`https://ticketapi.fly.dev/get_event?event_id=${eventId}`);
+    const eventData = response.data[0];
+    console.log(response.data)
+
+  if (!eventData) {
     return { notFound: true };
   }
-  return { props: { event } };
+    return {
+      props: {
+        event: eventData,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching event data:', error);
+
+    return { notFound: true };
+  }
 };

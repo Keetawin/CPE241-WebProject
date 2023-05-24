@@ -2,7 +2,22 @@ import React from "react";
 import AllEventsPage from "./events";
 import AllEventsPopular from "./events/popular";
 import Link from "next/link";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+
 export default function Home() {
+
+  const { data: session, status } = useSession();
+  // const [session, loading] = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log(session)
+    if(session && session.callbackUrl && !session.user.user_id){
+        router.push(session.callbackUrl);
+    }
+  }, [session]);
   return (
     <main>
       <div className="container mx-auto px-10">
