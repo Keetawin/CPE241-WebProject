@@ -2,10 +2,10 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import data from "../api/mock_event.json";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import axios from "axios";
-
+import { useSession } from "next-auth/react";
 
 type Event = {
   event_id: number;
@@ -32,6 +32,56 @@ const ticketTypes = [
 
 const EventDetail = ({ event }: Props) => {
   const [selectedTickets, setSelectedTickets] = useState(ticketTypes);
+  const [followed, setFollowed] = useState<boolean>(false)
+  const [eventType, setEventType] = useState<string | null>(null);
+  const {data: session} = useSession()
+
+  // console.log(event)
+  useEffect(() => {
+    if(event && session?.user?.user_id){
+      axios
+      .get(`https://ticketapi.fly.dev/check_follow_event?user_id=${session?.user?.user_id}&event_id=${event.event_id}`)
+      .then((res)=>{
+        setFollowed(res.data)
+      })
+    }
+    if(event){
+      handleEventType(event.event_type_id)
+        .then((eventType) => {
+          setEventType(eventType);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, []);
+
+  const handleFollow = () =>{
+    axios.post("https://ticketapi.fly.dev/follow_event",
+    {
+      user_id: session.user?.user_id,
+      event_id: event.event_id
+    }
+    )
+  }
+
+  const handleUnfollow = () =>{
+    axios
+    .delete(`https://ticketapi.fly.dev/follow_event?event_id=${event.event_id}&user_id=${session?.user?.user_id}`)
+    .then(
+      (res)=>{
+        setFollowed(false)
+      }
+    )
+  }
+
+  const handleEventType = (eventTypeId: number): Promise<string> => {
+    return axios
+      .get(`https://ticketapi.fly.dev/event_type_name?event_type_id=${eventTypeId}`)
+      .then((res) => {
+        return res.data.event_type;
+      });
+  };
 
 
   const handleIncrement = (ticketTypeIndex: number) => {
@@ -62,7 +112,7 @@ const EventDetail = ({ event }: Props) => {
   }
   const { query } = router;
   const eventId = query.id;
-  console.log(query)
+  // console.log(query)
   return (
     <div className=" container mx-auto">
       <div className=" flex flex-col md:flex-row my-10">
@@ -80,7 +130,7 @@ const EventDetail = ({ event }: Props) => {
             <p className="text-2xl font-semibold">Event followers</p>
             <p className="text-2xl">Lorem</p>
           </div>
-          <div className="mt-2 text-lg">{event.event_type_id}</div>
+          <div className="mt-2 text-lg">{eventType}</div>
           <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
           <div className="flex flex-col ml-4 gap-3">
             <p className=" text-lg font-medium">
@@ -92,9 +142,17 @@ const EventDetail = ({ event }: Props) => {
             <div className="pl-4 text-lg">{event.location}</div>
           </div>
           <div className="flex mt-6 justify-end">
-            <button className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-2 px-6 rounded-full">
-              Follow
-            </button>
+            {
+              followed && session?.user?.user_id &&
+                <button className="bg-[#8e8e8e] hover:bg-[#d1d1d1e6] text-[#171717] font-bold py-2 px-6 rounded-full" onClick={handleUnfollow}>
+                  Follow
+                </button>
+            }{
+              !followed && session?.user?.user_id &&
+              <button className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-2 px-6 rounded-full" onClick={handleFollow}>
+                Follow
+              </button>
+            }
           </div>
         </div>
       </div>
@@ -185,7 +243,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     const eventId = params?.id; // Assuming you have a dynamic route parameter named "id"
     const response = await axios.get(`https://ticketapi.fly.dev/get_event?event_id=${eventId}`);
     const eventData = response.data[0];
-    console.log(response.data)
+    // console.log(response.data)
 
   if (!eventData) {
     return { notFound: true };

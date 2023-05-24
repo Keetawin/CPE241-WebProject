@@ -1,7 +1,6 @@
 import axios from "axios";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { useRouter } from 'next/router';
 
 
 export const authOptions = {
@@ -31,18 +30,21 @@ export const authOptions = {
       .get(`https://ticketapi.fly.dev/get_user?email=${session.user.email}`)
       .then((res)=>{
         if (res.data.length == 0){
-          // console.log("not in database")
           session.callbackUrl = "/users/create"
-          // console.log(session)
         }else{
-          // console.log("in database1", res.data[0])
           session.user.user_id = res.data[0].user_id
           session.user.dob = res.data[0].dob
           session.user.tel = res.data[0].tel
           session.user.gender = res.data[0].gender
           session.user.f_name = res.data[0].f_name
           session.user.l_name = res.data[0].l_name
-          // console.log("in database2", session)
+          // axios
+          // .get(`https://ticketapi.fly.dev/get_user_followed_event?user_id=${res.data[0].user_id}`)
+          // .then((res)=>{
+          //   // console.log(res)
+          //   // console.log(res.data.map(e=>e.event_id))
+          //   session.user.follow_event_id = res.data.map(e=>e.event_id)
+          // })
         }
       })
       // console.log(session)
@@ -50,7 +52,6 @@ export const authOptions = {
     },
     async jwt({ token, trigger, session }) {
       if(trigger === 'update') {
-        // console.log("test", token, session)
         if(session.user) {
           token.user_id = session.user.user_id
           token.DOB = session.user.DOB
@@ -60,7 +61,6 @@ export const authOptions = {
         }
       }
       
-      // console.log("test", token)
       return token;
     }
   }
