@@ -5,9 +5,17 @@ import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import organize from "./organize_mock"; // Replace with your actual event data
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 export default function Organize() {
-  let [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const [organizeData, setOrganizeData] = useState({
+    name: "",
+    telephone: "",
+    website: "",
+  });
 
   function closeModal() {
     setIsOpen(false);
@@ -16,6 +24,37 @@ export default function Organize() {
   function openModal() {
     setIsOpen(true);
   }
+
+  const handleInputChange = (e) => {
+    setOrganizeData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleCreateOrganize = async () => {
+    const { name, telephone, website } = organizeData;
+
+    const organizeDataPayload = {
+      user_id: session?.user?.id, // Use the user ID from the session
+      name: name,
+      tel: telephone,
+      website: website,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://ticketapi.fly.dev/create_organize",
+        organizeDataPayload
+      );
+      closeModal();
+      // Handle success response here
+      console.log(response);
+    } catch (error) {
+      // Handle error here
+      console.error(error);
+    }
+  };
 
   return (
     <main>
@@ -87,80 +126,79 @@ export default function Organize() {
                         <div className="mt-4">
                           <form>
                             <div className="mb-4">
-                              {" "}
                               <label
-                                htmlFor="judul"
+                                htmlFor="name"
                                 className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
                               >
                                 Organize Name
                               </label>
                               <input
-                                name="judul"
+                                id="name"
+                                name="name"
                                 type="text"
-                                className="
-                                                w-full
-                                                h-4
-                                                sm:h-9
-                                                border-b-2 border-gray-300
-                                                focus:border-[#E90064]
-                                                outline-none
-                                            "
+                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
+                                value={organizeData.name}
+                                onChange={handleInputChange}
+                                required
                               />
                             </div>
 
                             <div className="mb-4">
-                              {" "}
                               <label
-                                htmlFor="judul"
+                                htmlFor="telephone"
                                 className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
                               >
                                 Telephone
                               </label>
                               <input
-                                name="judul"
+                                id="telephone"
+                                name="telephone"
                                 type="text"
-                                className="
-                                                w-full
-                                                h-4
-                                                sm:h-9
-                                                border-b-2 border-gray-300
-                                                focus:border-[#E90064]
-                                                outline-none
-                                            "
+                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
+                                value={organizeData.telephone}
+                                onChange={handleInputChange}
+                                required
                               />
                             </div>
                             <div className="mb-4">
-                              {" "}
                               <label
-                                htmlFor="judul"
+                                htmlFor="website"
                                 className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
                               >
                                 Website
                               </label>
                               <input
-                                name="judul"
+                                id="website"
+                                name="website"
                                 type="text"
-                                className="
-                                                w-full
-                                                h-4
-                                                sm:h-9
-                                                border-b-2 border-gray-300
-                                                focus:border-[#E90064]
-                                                outline-none
-                                            "
+                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
+                                value={organizeData.website}
+                                onChange={handleInputChange}
+                                required
                               />
                             </div>
-                          </form>
-                        </div>
 
-                        <div className="mt-6">
-                          <button
-                            type="button"
-                            className="inline-flex justify-center rounded-md border border-transparent bg-[#060047] px-4 py-2 text-sm font-medium text-white hover:bg-[#E90064] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                            onClick={closeModal}
-                          >
-                            Create Organize
-                          </button>
+                            <div className="mt-6">
+                              <button
+                                type="button"
+                                className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                                  !organizeData.name ||
+                                  !organizeData.telephone ||
+                                  !organizeData.website
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-[#060047] hover:bg-[#E90064]"
+                                }`}
+                                onClick={handleCreateOrganize}
+                                disabled={
+                                  !organizeData.name ||
+                                  !organizeData.telephone ||
+                                  !organizeData.website
+                                }
+                              >
+                                Create Organize
+                              </button>
+                            </div>
+                          </form>
                         </div>
                       </Dialog.Panel>
                     </Transition.Child>

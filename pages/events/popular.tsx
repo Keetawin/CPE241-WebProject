@@ -21,6 +21,7 @@ export default function AllEventsPopular() {
       .then((response) => {
         setEvents(response.data);
         setLoading(false);
+        console.log(response);
       })
       .catch((error) => console.error(error));
   }, []);
