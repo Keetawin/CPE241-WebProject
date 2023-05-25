@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import dayjs from "dayjs";
 
 type Event = {
   event_id: number;
@@ -14,7 +15,8 @@ type Event = {
   location: string;
   price: number;
   poster: string;
-  event_date: string;
+  event_startdate: string;
+  event_enddate: string;
   event_type_id: number;
   categories: string[];
 };
@@ -34,7 +36,15 @@ const EventDetail = ({ event }: Props) => {
   const [selectedTickets, setSelectedTickets] = useState(ticketTypes);
   const [followed, setFollowed] = useState<boolean>(false);
   const [eventType, setEventType] = useState<string | null>(null);
+  const [NumberOfFollower, setNumberOfFollower] = useState<number>(0);
   const { data: session } = useSession();
+
+  const formattedStartDate = event?.event_startdate
+    ? dayjs(event.event_startdate).format("D MMMM YYYY")
+    : "";
+  const formattedEndDate = event?.event_enddate
+    ? dayjs(event.event_enddate).format("D MMMM YYYY")
+    : "";
 
   // console.log(event)
   useEffect(() => {
@@ -59,6 +69,24 @@ const EventDetail = ({ event }: Props) => {
         });
     }
   }, [session]);
+
+  useEffect(() => {
+    if (event && event.event_id) {
+      axios
+        .get(
+          `https://ticketapi.fly.dev/get_event_follower?event_id=${event.event_id}`
+        )
+        .then((res) => {
+          const eventData = res.data[0];
+          if (eventData && eventData.number_of_follower) {
+            setNumberOfFollower(parseInt(eventData.number_of_follower));
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching event followers:", error);
+        });
+    }
+  }, [event]);
 
   const handleFollow = () => {
     axios
@@ -137,20 +165,21 @@ const EventDetail = ({ event }: Props) => {
           )}
         </div>
         <div>
-          <div className="flex gap-10">
-            <p className="text-2xl font-semibold">Event followers</p>
-            <p className="text-2xl">Lorem</p>
-          </div>
-          <div className="mt-2 text-lg">{eventType}</div>
           <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+          <div className="mb-2 text-lg">{eventType}</div>
           <div className="flex flex-col ml-4 gap-3">
             <p className=" text-lg font-medium">
-              {event.event_date} - {event.event_date}
+              {formattedStartDate} - {formattedEndDate}
             </p>
             <p className=" text-lg font-semibold">Categories</p>
-            <div className="pl-4 text-lg">{event.categories}</div>
+            <div className="text-lg">{event.categories.join(", ")}</div>
             <p className=" text-lg font-semibold">Location</p>
-            <div className="pl-4 text-lg">{event.location}</div>
+
+            <div className="text-lg">{event.location}</div>
+            <div className="flex gap-10">
+              <p className="text-lg font-semibold">Event followers</p>
+              <p className="text-lg font-semibold">{NumberOfFollower}</p>
+            </div>
           </div>
           <div className="flex mt-6 justify-end">
             {followed && session?.user?.user_id && (
@@ -207,7 +236,7 @@ const EventDetail = ({ event }: Props) => {
                   </div>
                 </div>
                 <div className="px-4 py-4 font-medium text-red-500">
-                  Available until {event.event_date}
+                  Available until {formattedStartDate}
                 </div>
                 <div className="px-4 pb-4 font-medium  text-[#060047]">
                   {ticketType.remaining} remaining
@@ -244,7 +273,6 @@ const EventDetail = ({ event }: Props) => {
 };
 
 export default EventDetail;
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths = data.map((event) => ({
     params: { id: event.event_id.toString() },
@@ -254,20 +282,30 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   try {
-    const eventId = params?.id; // Assuming you have a dynamic route parameter named "id"
-    const response = await axios.get(
-      `https://ticketapi.fly.dev/get_event?event_id=${eventId}`
-    );
-    const eventData = response.data[0];
-    // console.log(response.data)
+    const eventId = params?.id;
+    const [eventResponse, followersResponse] = await Promise.all([
+      axios.get(`https://ticketapi.fly.dev/get_event?event_id=${eventId}`),
+      axios.get(
+        `https://ticketapi.fly.dev/get_event_follower?event_id=${eventId}`
+      ),
+    ]);
+    const eventData = eventResponse.data[0];
+    const followersData = followersResponse.data[0];
 
     if (!eventData) {
       return { notFound: true };
     }
+
+    const numberOfFollowers = followersData
+      ? parseInt(followersData.number_of_follower)
+      : 0;
+
     return {
       props: {
         event: eventData,
+        numberOfFollowers,
       },
+      revalidate: 5, // Revalidate the data every 10 seconds
     };
   } catch (error) {
     console.error("Error fetching event data:", error);
