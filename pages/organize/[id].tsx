@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import organize from "./organize_mock"; // Replace with your actual event data
 import { FaMoneyBill, FaMoneyBillWave, FaMoneyCheckAlt } from "react-icons/fa";
 import Link from "next/link";
+import React from "react";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-10">
       <h1 className="text-2xl font-bold py-6">{event.title} Dashboard</h1>
+
       <div className="grid grid-cols-3 gap-8 w-full h-full mx-10 ">
         <div className="flex gap-6">
           <div className="text-4xl text-green-500">
