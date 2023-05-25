@@ -24,7 +24,7 @@ export default function EventCard({
           }
           {
             !img &&
-            <div className="flex w-full h-full bg-gradient-to-r from-[#b7175c] to-[#E90064] justify-center items-center text-center">
+            <div className="flex w-full h-full bg-gradient-to-r from-[#b7175c] to-[#E90064] justify-center items-center text-center rounded-t-lg">
               <h1 className="text-white font-bold text-4xl rotate-[-12deg] skew-x-12">
                 {eventName}
               </h1>
