@@ -38,13 +38,7 @@ const EventDetail = ({ event }: Props) => {
 
   // console.log(event)
   useEffect(() => {
-    if(event && session?.user?.user_id){
-      axios
-      .get(`https://ticketapi.fly.dev/check_follow_event?user_id=${session?.user?.user_id}&event_id=${event.event_id}`)
-      .then((res)=>{
-        setFollowed(res.data)
-      })
-    }
+
     if(event){
       handleEventType(event.event_type_id)
         .then((eventType) => {
@@ -55,6 +49,17 @@ const EventDetail = ({ event }: Props) => {
         });
     }
   }, []);
+  useEffect(() => {
+    if(event && session?.user?.user_id){
+      axios
+      .get(`https://ticketapi.fly.dev/check_follow_event?user_id=${session?.user?.user_id}&event_id=${event.event_id}`)
+      .then((res)=>{
+        setFollowed(res.data)
+      })
+    }
+
+  }, [session])
+  
 
   const handleFollow = () =>{
     axios.post("https://ticketapi.fly.dev/follow_event",
@@ -62,7 +67,9 @@ const EventDetail = ({ event }: Props) => {
       user_id: session.user?.user_id,
       event_id: event.event_id
     }
-    )
+    ).then((res)=>{
+      setFollowed(true)
+    })
   }
 
   const handleUnfollow = () =>{
@@ -144,8 +151,8 @@ const EventDetail = ({ event }: Props) => {
           <div className="flex mt-6 justify-end">
             {
               followed && session?.user?.user_id &&
-                <button className="bg-[#8e8e8e] hover:bg-[#d1d1d1e6] text-[#171717] font-bold py-2 px-6 rounded-full" onClick={handleUnfollow}>
-                  Follow
+                <button className="bg-[#8e8e8e] hover:bg-[#d1d1d1e6] text-[#ededed] font-bold py-2 px-6 rounded-full" onClick={handleUnfollow}>
+                  Unfollow
                 </button>
             }{
               !followed && session?.user?.user_id &&
