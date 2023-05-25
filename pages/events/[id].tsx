@@ -2,10 +2,9 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import data from "../api/mock_event.json";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import React from "react";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 type Event = {
   event_id: number;
@@ -24,77 +23,22 @@ type Props = {
 };
 
 const ticketTypes = [
-  { name: "Regular", price: 100, quantity: 0 },
-  { name: "VIP", price: 500, quantity: 0 },
-  { name: "Gold", price: 1000, quantity: 0 },
-  { name: "Premium", price: 2000, quantity: 0 },
+  { name: "Regular", price: 100, quantity: 0 ,remaining: 5},
+  { name: "VIP", price: 500, quantity: 0 ,remaining: 7},
+  { name: "Gold", price: 1000, quantity: 0 ,remaining: 4},
+  { name: "Premium", price: 2000, quantity: 0 ,remaining: 3},
 ];
 
 const EventDetail = ({ event }: Props) => {
   const [selectedTickets, setSelectedTickets] = useState(ticketTypes);
-  const [followed, setFollowed] = useState<boolean>(false)
-  const [eventType, setEventType] = useState<string | null>(null);
-  const {data: session} = useSession()
-
-  // console.log(event)
-  useEffect(() => {
-
-    if(event){
-      handleEventType(event.event_type_id)
-        .then((eventType) => {
-          setEventType(eventType);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-  }, []);
-  useEffect(() => {
-    if(event && session?.user?.user_id){
-      axios
-      .get(`https://ticketapi.fly.dev/check_follow_event?user_id=${session?.user?.user_id}&event_id=${event.event_id}`)
-      .then((res)=>{
-        setFollowed(res.data)
-      })
-    }
-
-  }, [session])
-  
-
-  const handleFollow = () =>{
-    axios.post("https://ticketapi.fly.dev/follow_event",
-    {
-      user_id: session.user?.user_id,
-      event_id: event.event_id
-    }
-    ).then((res)=>{
-      setFollowed(true)
-    })
-  }
-
-  const handleUnfollow = () =>{
-    axios
-    .delete(`https://ticketapi.fly.dev/follow_event?event_id=${event.event_id}&user_id=${session?.user?.user_id}`)
-    .then(
-      (res)=>{
-        setFollowed(false)
-      }
-    )
-  }
-
-  const handleEventType = (eventTypeId: number): Promise<string> => {
-    return axios
-      .get(`https://ticketapi.fly.dev/event_type_name?event_type_id=${eventTypeId}`)
-      .then((res) => {
-        return res.data.event_type;
-      });
-  };
-
 
   const handleIncrement = (ticketTypeIndex: number) => {
     const updatedTickets = [...selectedTickets];
-    updatedTickets[ticketTypeIndex].quantity++;
-    setSelectedTickets(updatedTickets);
+    const currentQuantity = updatedTickets[ticketTypeIndex].quantity;
+    if (currentQuantity < updatedTickets[ticketTypeIndex].remaining) {
+      updatedTickets[ticketTypeIndex].quantity++;
+      setSelectedTickets(updatedTickets);
+    }
   };
 
   const handleDecrement = (ticketTypeIndex: number) => {
@@ -117,27 +61,22 @@ const EventDetail = ({ event }: Props) => {
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
-  const { query } = router;
-  const eventId = query.id;
-  // console.log(query)
   return (
     <div className=" container mx-auto">
       <div className=" flex flex-col md:flex-row my-10">
         <div className="w-1/2 flex justify-center">
-          {event.poster &&
           <img
             className="inset-0 object-cover md:w-1/2 md:h-[50vh]"
             src={event.poster}
             alt="event poster"
           />
-          }
         </div>
         <div>
           <div className="flex gap-10">
             <p className="text-2xl font-semibold">Event followers</p>
             <p className="text-2xl">Lorem</p>
           </div>
-          <div className="mt-2 text-lg">{eventType}</div>
+          <div className="mt-2 text-lg">{event.event_type_id}</div>
           <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
           <div className="flex flex-col ml-4 gap-3">
             <p className=" text-lg font-medium">
@@ -149,24 +88,29 @@ const EventDetail = ({ event }: Props) => {
             <div className="pl-4 text-lg">{event.location}</div>
           </div>
           <div className="flex mt-6 justify-end">
-            {
-              followed && session?.user?.user_id &&
-                <button className="bg-[#8e8e8e] hover:bg-[#d1d1d1e6] text-[#ededed] font-bold py-2 px-6 rounded-full" onClick={handleUnfollow}>
-                  Unfollow
-                </button>
-            }{
-              !followed && session?.user?.user_id &&
-              <button className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-2 px-6 rounded-full" onClick={handleFollow}>
-                Follow
-              </button>
-            }
+            <button className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-2 px-6 rounded-full">
+              Follow
+            </button>
           </div>
         </div>
       </div>
       <div className="container mx-auto px-24">
         <h1 className=" text-3xl font-bold text-[#060047]">Description</h1>
         <p className="text-lg py-4 md:px-24">
-          {event.event_description}
+          Lorem ipsum dolor sit amet consectetur. Viverra nec sit lorem velit
+          quam amet. Fermentum orci tempus blandit rutrum lorem mattis purus
+          massa. Sodales sapien enim dui in mattis enim fames. Vitae convallis
+          eget in amet aliquam diam adipiscing. Eu est neque ut aliquet
+          ultricies neque euismod quis dictumst. Felis tortor arcu neque massa
+          nunc urna dignissim amet tempor. A quisque feugiat dolor laoreet
+          mattis purus odio laoreet. Auctor id elit amet convallis mi at ut.
+          Consequat curabitur augue scelerisque ut nunc morbi tincidunt. Congue
+          pharetra tortor pretium enim leo enim id. Facilisis ullamcorper dolor
+          blandit mauris est elit nascetur facilisis. Diam urna varius odio
+          convallis adipiscing. Magna lobortis vitae purus integer maecenas
+          dolor nec. Senectus sem laoreet velit ipsum in et neque tristique
+          mauris. Bibendum ipsum lorem et convallis tortor lorem gravida
+          fermentum risus. Blandit non sagittis aliquam.
         </p>
         <h1 className=" text-3xl font-bold text-[#060047]">Tickets</h1>
         <div className="flex gap-8 px-2 py-4">
@@ -203,7 +147,7 @@ const EventDetail = ({ event }: Props) => {
                   Available until {event.event_date}
                 </div>
                 <div className="px-4 pb-4 font-medium  text-[#060047]">
-                  9 remaining
+                {ticketType.remaining} remaining
                 </div>
               </div>
             ))}
@@ -220,14 +164,20 @@ const EventDetail = ({ event }: Props) => {
                 * All Prices exclude VAT
                 <br />* Some fees may be applied
               </p>
-              <button
+              
+              <Link
+              href={{ pathname: "/events/checkout/[id]", query: { id: event.event_id } }}
+              key={event.event_id}
+              >
+                <button
                 className={`mt-4 w-full text-white font-semibold text-xl py-2 rounded ${
                   totalTickets === 0 ? "bg-gray-400" : "bg-[#060047]"
                 }`}
                 disabled={totalTickets === 0}
-              >
+                >
                 Buy Tickets
-              </button>
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -246,23 +196,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  try {
-    const eventId = params?.id; // Assuming you have a dynamic route parameter named "id"
-    const response = await axios.get(`https://ticketapi.fly.dev/get_event?event_id=${eventId}`);
-    const eventData = response.data[0];
-    // console.log(response.data)
-
-  if (!eventData) {
+  const event = data.find(
+    (item) => item.event_id === parseInt(params?.id as string)
+  );
+  if (!event) {
     return { notFound: true };
   }
-    return {
-      props: {
-        event: eventData,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching event data:', error);
-
-    return { notFound: true };
-  }
+  return { props: { event } };
 };
