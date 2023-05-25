@@ -7,7 +7,7 @@ import { Fragment, useState } from "react";
 import organize from "./organize_mock"; // Replace with your actual event data
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps } from "next";
 
 export default function Organize({ userOrganize }) {
   const { data: session } = useSession();
@@ -73,13 +73,13 @@ export default function Organize({ userOrganize }) {
             {userOrganize.map((event) => (
               <Link
                 className="px-4 py-12 border border-gray-200 rounded-lg shadow bg-white hover:bg-slate-50"
-                key={event.id}
-                href={`/organize/${event.id}`}
+                key={event.organize_id}
+                href={`/organize/${event.organize_id}`}
               >
                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-[#060047]">
-                  {event.title}
+                  {event.name}
                 </h5>
-                <p className="text-gray-500">{event.eventCount} Events</p>
+                <p className="text-gray-500"></p>
               </Link>
             ))}
             <button
@@ -215,7 +215,7 @@ export default function Organize({ userOrganize }) {
   );
 }
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context)
+  const session = await getSession(context);
   // console.log("test", session)
   const user_id = session?.user?.user_id;
   // console.log(user_id)

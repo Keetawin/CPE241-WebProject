@@ -8,6 +8,7 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import axios from "axios";
 
 const ITEM_HEIGHT = 48;
@@ -112,7 +113,8 @@ export default function CreateEvent() {
   const preSelectedValues: any[] = []; // Example array of pre-selected values
   const [age, setAge] = React.useState("");
   const [personName, setPersonName] = useState(preSelectedValues);
-
+  const router = useRouter();
+  const { id } = router.query;
   const [selectedValue, setSelectedValue] = useState("");
 
   const handleSubmit = async (event) => {
@@ -120,7 +122,7 @@ export default function CreateEvent() {
 
     // Prepare the payload
     const payload = {
-      organize_id: 3, // Replace with the actual organize_id value
+      organize_id: id, // Replace with the actual organize_id value
       categories_id: personName.map((index) => index + 1),
       event_name: event.target.name.value,
       event_startdate: event.target.start_date.value,
