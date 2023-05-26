@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import EventCard from "@/components/event_card";
 import Link from "next/link";
 import axios from "axios";
+import dayjs from "dayjs";
 
 type Event = {
   event_id: string;
@@ -26,7 +27,9 @@ export default function AllEventsPopular() {
       .catch((error) => console.error(error));
   }, []);
 
-  // console.log(events);
+  const formatDate = (dateString: string) => {
+    return dayjs(dateString).format("DD MMMM YYYY");
+  };
 
   return (
     <main>
@@ -38,7 +41,7 @@ export default function AllEventsPopular() {
               key={event.event_id}
             >
               <EventCard
-                eventDate={event.event_startdate}
+                eventDate={formatDate(event.event_startdate)}
                 img={event.poster}
                 eventName={event.event_name}
                 location={event.location}
