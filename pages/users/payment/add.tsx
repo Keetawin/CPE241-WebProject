@@ -3,12 +3,13 @@ import MenuBar from "@/components/account_menu";
 import ProfileCard from "@/components/profile_card";
 import TabBar from "@/components/show_ticket";
 import React, { useEffect } from "react";
-import { Alert, TextField, Button, MenuItem, Select, FormControl, ToggleButtonGroup, ToggleButton}  from '@mui/material';
+import { Alert, Collapse, TextField, Button, MenuItem, Select, FormControl, ToggleButtonGroup, ToggleButton, IconButton}  from '@mui/material';
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle}  from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import axios from "axios";
 
 interface dateType {
@@ -33,10 +34,13 @@ export default function PaymentMethod() {
     const [CVV, setCVV] = useState("")
     const [missing, setMissing] = useState<string[]>([])
     const [paymentMethod, setPaymentMethod] = useState<string>("Credit Card")
-    const [promptPay, setPromptPay] = useState<string>("")
+    const [promptPay, setpromptPay] = useState<string>("")
     const [open, setOpen] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("")
+    const [alert, setAlert] = useState("success")
     const {data: session} = useSession()
-
+    const router = useRouter()
     useEffect(() => {
         if(missing.length > 0 ){
         setOpen(true)
@@ -94,6 +98,14 @@ export default function PaymentMethod() {
                 )                      
                 .then((res)=>{
                     console.log(res)
+                    if(res.status == 200){
+                        setAlert('success')
+                    }
+                    if(res.status == 201){
+                        setAlert('error')
+                    }
+                    setAlertMessage(res.data)
+                    setAlertOpen(true)
                 })
             } catch (error) {
                 console.log(error)
@@ -230,7 +242,7 @@ export default function PaymentMethod() {
                                 variant="outlined" />
                             </div>
                             <div className="flex flex-col my-2">
-                                <label htmlFor="">Prompt Number</label>
+                                <label htmlFor="">Prompt Pay Number</label>
                                 <TextField 
                                 id="outlined-basic" 
                                 value={promptPay}
@@ -240,14 +252,37 @@ export default function PaymentMethod() {
                                 }}
                                 error={missing.includes("Prompt Pay")}
                                 onChange={(e)=>{
-                                    setPromptPay(e.target.value)
+                                    setpromptPay(e.target.value)
                                 }}
                                 sx={{width: "50ch"}}
                                 variant="outlined" />
                             </div>
                         </>
                     }
-                    <Button className="ml-[55ch]  my-2" type="submit" variant="contained" color="primary" style={{ backgroundColor: '#E90064' }}>Add!</Button>
+                    <Collapse in={alertOpen}>
+                        <Alert
+                        severity={alert}
+                        action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setAlertOpen(false);
+                            }}
+                            >
+                                x
+                            </IconButton>
+                        }
+                        sx={{ mb: 2 }}
+                        >
+                            {alertMessage}
+                        </Alert>
+                </Collapse>
+                <div className="flex ml-[30ch]  my-2">
+                    <Button className="mr-4" type="submit" variant="outlined" color="primary" onClick={()=>{router.back()}}>Back</Button>
+                    <Button type="submit" variant="contained" color="primary" style={{ backgroundColor: '#E90064' }}>Add!</Button>
+                </div>
                 </form>
             </div>
             </div>
