@@ -10,6 +10,7 @@ type Event = {
   event_startdate: string;
   location: string;
   poster: string;
+  follower: number;
 };
 
 export default function AllEventsPopular() {
@@ -20,7 +21,11 @@ export default function AllEventsPopular() {
     axios
       .get<Event[]>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
-        setEvents(response.data);
+        const sortedEvents = response.data.sort(
+          (a, b) => b.follower - a.follower
+        );
+        const topEvents = sortedEvents.slice(0, 6); // Select the top 6 events with the most followers
+        setEvents(topEvents);
         setLoading(false);
         console.log(response);
       })

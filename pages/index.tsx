@@ -6,6 +6,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Footer from "@/components/footer";
+import MusicEvents from "./events/component/music";
+import EducationEvents from "./events/component/education";
+import SportEvents from "./events/component/sport";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -39,13 +42,35 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold py-4">Music & Festival</h1>
             <Link
-              href="/events/upcoming"
+              href="/events/music-festival"
               className="text-md font-medium py-4 text-[#3f36a5]"
             >
               View All
             </Link>
           </div>
-          <AllEventsPage />
+          <MusicEvents />
+
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold py-4">Education</h1>
+            <Link
+              href="/events/education"
+              className="text-md font-medium py-4 text-[#3f36a5]"
+            >
+              View All
+            </Link>
+          </div>
+          <EducationEvents />
+
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold py-4">Sport</h1>
+            <Link
+              href="/events/education"
+              className="text-md font-medium py-4 text-[#3f36a5]"
+            >
+              View All
+            </Link>
+          </div>
+          <SportEvents />
         </div>
       </main>
 

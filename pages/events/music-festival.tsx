@@ -5,19 +5,16 @@ import axios from "axios";
 import dayjs from "dayjs";
 
 type Event = {
-  event_id: number;
+  event_id: string;
   event_name: string;
-  event_description: string;
-  location: string;
-  price: number;
-  poster: string;
   event_startdate: string;
-  event_enddate: string;
+  location: string;
+  poster: string;
   event_type_id: number;
-  categories: string[];
+  follower: number;
 };
 
-export default function AllEventsPages() {
+export default function AllEventsMusic() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,12 +22,17 @@ export default function AllEventsPages() {
     axios
       .get<Event[]>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
-        const sortedEvents = response.data.sort((a, b) =>
-          dayjs(b.event_startdate).diff(a.event_startdate)
+        const filteredEvents = response.data.filter(
+          (event) =>
+            event.event_type_id === 2 ||
+            event.event_type_id === 3 ||
+            event.event_type_id === 4
+        );
+        const sortedEvents = filteredEvents.sort(
+          (a, b) => b.follower - a.follower
         );
         setEvents(sortedEvents);
         setLoading(false);
-        console.log(response);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -39,13 +41,12 @@ export default function AllEventsPages() {
     return dayjs(dateString).format("DD MMMM YYYY");
   };
 
-  const displayedEvents = events.slice(0, 6); // Limit the number of displayed events to 6
-
   return (
-    <main>
-      <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-4 flex flex-col gap-6 ">
-        {displayedEvents && displayedEvents.length > 0 ? (
-          displayedEvents.map((event) => (
+    <main className="container mx-auto px-10">
+      <h1 className="text-2xl font-bold py-4">Music & Festival</h1>
+      <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-4 flex flex-col gap-6">
+        {events && events.length > 0 ? (
+          events.map((event) => (
             <Link
               href={{ pathname: "/events/[id]", query: { id: event.event_id } }}
               key={event.event_id}
@@ -59,7 +60,7 @@ export default function AllEventsPages() {
             </Link>
           ))
         ) : (
-          <p>No events found.</p>
+          <p>No music events found.</p>
         )}
       </div>
     </main>

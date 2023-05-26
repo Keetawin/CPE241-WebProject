@@ -14,10 +14,10 @@ type Event = {
   event_startdate: string;
   event_enddate: string;
   event_type_id: number;
-  categories: string[];
+  follower: number;
 };
 
-export default function AllEventsPages() {
+export default function MusicEvents() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,8 +25,8 @@ export default function AllEventsPages() {
     axios
       .get<Event[]>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
-        const sortedEvents = response.data.sort((a, b) =>
-          dayjs(b.event_startdate).diff(a.event_startdate)
+        const sortedEvents = response.data.sort(
+          (a, b) => b.follower - a.follower
         );
         setEvents(sortedEvents);
         setLoading(false);
@@ -39,7 +39,14 @@ export default function AllEventsPages() {
     return dayjs(dateString).format("DD MMMM YYYY");
   };
 
-  const displayedEvents = events.slice(0, 6); // Limit the number of displayed events to 6
+  const displayedEvents = events
+    .filter(
+      (event) =>
+        event.event_type_id === 2 ||
+        event.event_type_id === 3 ||
+        event.event_type_id === 4
+    )
+    .slice(0, 6); // Limit the number of displayed events to 6
 
   return (
     <main>
