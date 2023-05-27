@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import QRCode from 'qrcode.react';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
 
