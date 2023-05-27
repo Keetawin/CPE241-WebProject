@@ -7,9 +7,16 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Chip from "@mui/material/Chip";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { useDropzone } from "react-dropzone";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase";
+import { v4 as uuidv4 } from "uuid";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -70,6 +77,7 @@ const menuItems = event_type.map((type, index) => (
 ));
 
 const names = [
+  "Technology",
   "Art & Design",
   "Beauty",
   "Book",
@@ -79,11 +87,10 @@ const names = [
   "Concert",
   "Education",
   "E-Sport",
-  "Experience",
   "Fashion",
   "Finance & Accounting",
-  "Food Delivery",
   "Food & Drink",
+  "Food Delivery",
   "Games",
   "Health",
   "Hobbies & Special Interests",
@@ -103,12 +110,78 @@ const names = [
   "Sports",
   "Stage Plays",
   "Talk Show",
-  "Technology",
   "Travel",
   "Vehicle",
+  "Experience",
 ];
 
 export default function CreateEvent() {
+  const [imageSrc, setImageSrc] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploadData, setUploadData] = useState(null);
+  const [acceptedFiles, setAcceptedFiles] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [eventName, setEventName] = useState("");
+  const [location, setLocation] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+
+  const storageRef = getStorage(storage);
+  const imagesListRef = ref(storageRef, "images/");
+
+  const handleFileChange = useCallback((files) => {
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (onLoadEvent) {
+        const result = onLoadEvent.target?.result;
+        if (typeof result === "string") {
+          setImageSrc(result);
+          setUploadData(null);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+    setAcceptedFiles(files);
+  }, []);
+
+  const handleUpload = useCallback(async () => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      const storageRef = getStorage(storage); // Update this line
+      const imageName = `${file.name}_${uuidv4()}`;
+      const fileRef = ref(storageRef, `images/${imageName}`);
+
+      try {
+        await uploadBytes(fileRef, file);
+        const downloadUrl = await getDownloadURL(fileRef);
+
+        setImageUrl(downloadUrl);
+        setUploadData({ downloadUrl });
+        setImageSrc(downloadUrl); // Set the newly uploaded image as the displayed image
+
+        // TODO: Save the image URL to your database
+        // Here, you can make an API request to your backend server
+        // and pass the imageUrl to save it in your database
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [acceptedFiles]);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/*",
+    onDrop: handleFileChange,
+  });
+
+  const files = acceptedFiles.map((file) => (
+    <li key={file.path}>
+      {file.path} - {file.size} bytes
+    </li>
+  ));
+
   const theme = useTheme();
   const preSelectedValues: any[] = []; // Example array of pre-selected values
   const [age, setAge] = React.useState("");
@@ -122,14 +195,15 @@ export default function CreateEvent() {
 
     // Prepare the payload
     const payload = {
-      organize_id: id, // Replace with the actual organize_id value
+      organize_id: Number(id), // Replace with the actual organize_id value
       categories_id: personName.map((index) => index + 1),
-      event_name: event.target.name.value,
-      event_startdate: event.target.start_date.value,
-      event_enddate: event.target.end_date.value,
-      location: event.target.location.value,
+      event_name: eventName,
+      event_startdate: startDate,
+      event_enddate: endDate,
+      location: location,
       event_type_id: age,
-      event_description: event.target.message.value,
+      event_description: eventDescription,
+      poster: imageUrl,
     };
 
     try {
@@ -193,8 +267,53 @@ export default function CreateEvent() {
                   id="name"
                   placeholder="Event Name"
                   className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                  required
+                  value={eventName}
+                  onChange={(e) => setEventName(e.target.value)}
                 />
               </div>
+
+              <div className="mb-5">
+                <label
+                  htmlFor="poster"
+                  className="mb-3 block text-base font-medium text-[#060047]"
+                >
+                  Poster Upload
+                </label>
+              </div>
+
+              <div>
+                <section>
+                  <div
+                    {...getRootProps({
+                      className: "border-2 border-dashed rounded p-4 mb-4",
+                    })}
+                  >
+                    <input {...getInputProps()} required />
+                    <p className="text-gray-500">
+                      Drag 'n' drop an image here, or click to select an image
+                    </p>
+                  </div>
+                  <aside>
+                    <ul>{files}</ul>
+                  </aside>
+                </section>
+
+                {imageSrc && (
+                  <div className="mt-4">
+                    <img src={imageSrc} alt="Uploaded" className="max-w-full" />
+                    {!uploadData && (
+                      <button
+                        className="bg-[#060047] text-white px-4 py-2 rounded my-4"
+                        onClick={handleUpload}
+                      >
+                        Upload Image
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="mb-5">
                 <label
                   htmlFor="event_type"
@@ -212,121 +331,13 @@ export default function CreateEvent() {
                     value={age}
                     label="Event Type"
                     onChange={handleChangeSelect}
+                    required
                   >
-                    <MenuItem key={1} value={1}>
-                      Party
-                    </MenuItem>
-                    <MenuItem key={2} value={2}>
-                      Concert
-                    </MenuItem>
-                    <MenuItem key={3} value={3}>
-                      Mini Concert
-                    </MenuItem>
-                    <MenuItem key={4} value={4}>
-                      Festival
-                    </MenuItem>
-                    <MenuItem key={5} value={5}>
-                      Meet And Greet
-                    </MenuItem>
-                    <MenuItem key={6} value={6}>
-                      Run
-                    </MenuItem>
-                    <MenuItem key={7} value={7}>
-                      Bike
-                    </MenuItem>
-                    <MenuItem key={8} value={8}>
-                      Boxing
-                    </MenuItem>
-                    <MenuItem key={9} value={9}>
-                      Fitness
-                    </MenuItem>
-                    <MenuItem key={10} value={10}>
-                      Esports
-                    </MenuItem>
-                    <MenuItem key={11} value={11}>
-                      Tournament
-                    </MenuItem>
-                    <MenuItem key={12} value={12}>
-                      League
-                    </MenuItem>
-                    <MenuItem key={13} value={13}>
-                      Workshop
-                    </MenuItem>
-                    <MenuItem key={14} value={14}>
-                      Class
-                    </MenuItem>
-                    <MenuItem key={15} value={15}>
-                      Activation
-                    </MenuItem>
-                    <MenuItem key={16} value={16}>
-                      Press Conference
-                    </MenuItem>
-                    <MenuItem key={17} value={17}>
-                      Charity
-                    </MenuItem>
-                    <MenuItem key={18} value={18}>
-                      Networking
-                    </MenuItem>
-                    <MenuItem key={19} value={19}>
-                      Travel
-                    </MenuItem>
-                    <MenuItem key={20} value={20}>
-                      Photography
-                    </MenuItem>
-                    <MenuItem key={21} value={21}>
-                      Wedding
-                    </MenuItem>
-                    <MenuItem key={22} value={22}>
-                      Incentive
-                    </MenuItem>
-                    <MenuItem key={23} value={23}>
-                      Show
-                    </MenuItem>
-                    <MenuItem key={24} value={24}>
-                      Pageant
-                    </MenuItem>
-                    <MenuItem key={25} value={25}>
-                      Meetup
-                    </MenuItem>
-                    <MenuItem key={26} value={26}>
-                      Camp
-                    </MenuItem>
-                    <MenuItem key={27} value={27}>
-                      Conference
-                    </MenuItem>
-                    <MenuItem key={28} value={28}>
-                      Expo
-                    </MenuItem>
-                    <MenuItem key={29} value={29}>
-                      Exhibition
-                    </MenuItem>
-                    <MenuItem key={30} value={30}>
-                      Trade Fair
-                    </MenuItem>
-                    <MenuItem key={31} value={31}>
-                      Seminar
-                    </MenuItem>
-                    <MenuItem key={32} value={32}>
-                      Meetings
-                    </MenuItem>
-                    <MenuItem key={33} value={33}>
-                      Funding Raising
-                    </MenuItem>
-                    <MenuItem key={34} value={34}>
-                      Webinar
-                    </MenuItem>
-                    <MenuItem key={35} value={35}>
-                      Virtual Run
-                    </MenuItem>
-                    <MenuItem key={36} value={36}>
-                      Online Course
-                    </MenuItem>
-                    <MenuItem key={37} value={37}>
-                      Live Stream
-                    </MenuItem>
-                    <MenuItem key={38} value={38}>
-                      Online Expo
-                    </MenuItem>
+                    {event_type.map((type, index) => (
+                      <MenuItem key={index + 1} value={index + 1}>
+                        {type}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </div>
@@ -345,6 +356,7 @@ export default function CreateEvent() {
                     labelId="demo-multiple-chip-label"
                     id="demo-multiple-chip"
                     multiple
+                    required
                     value={personName}
                     onChange={handleChange}
                     input={
@@ -383,14 +395,24 @@ export default function CreateEvent() {
                 >
                   Start Date
                 </label>
-                <input
-                  type="date"
-                  name="start_date"
-                  id="start_date"
-                  placeholder="Enter Your Location"
-                  className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start Date"
+                    name="start_date"
+                    id="start_date"
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                        required
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
               </div>
+
               <div className="mb-5">
                 <label
                   htmlFor="end_date"
@@ -398,13 +420,22 @@ export default function CreateEvent() {
                 >
                   End Date
                 </label>
-                <input
-                  type="date"
-                  name="end_date"
-                  id="end_date"
-                  placeholder="Enter Your Location"
-                  className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="End Date"
+                    name="end_date"
+                    id="end_date"
+                    value={endDate}
+                    onChange={(newValue) => setEndDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                        required
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
               </div>
 
               <div className="mb-5">
@@ -420,6 +451,9 @@ export default function CreateEvent() {
                   id="location"
                   placeholder="Enter Your Location"
                   className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                  required
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
                 />
               </div>
 
@@ -437,12 +471,16 @@ export default function CreateEvent() {
                   placeholder="Type your message"
                   className="w-full resize-none rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
                   defaultValue={""}
+                  required
+                  value={eventDescription}
+                  onChange={(e) => setEventDescription(e.target.value)}
                 />
               </div>
               <div>
                 <button
                   type="submit"
-                  className="hover:shadow-form rounded-md bg-[#060047] py-3 px-8 text-base font-semibold text-white outline-none"
+                  className="hover:shadow-form rounded-md bg-[#060047] py-3 mb-4 px-8 text-base font-semibold text-white outline-none"
+                  onClick={handleSubmit}
                 >
                   Submit
                 </button>
