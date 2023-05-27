@@ -2,7 +2,7 @@ import React from "react";
 import { FaMoneyBill, FaMoneyBillWave, FaMoneyCheckAlt } from "react-icons/fa";
 
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
-
+import { useRouter } from "next/router";
 import { Bar } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement } from "chart.js";
 
@@ -42,6 +42,19 @@ const rows = [
 ];
 
 export default function EventDashBoard() {
+  const router = useRouter();
+  const { slug } = router.query;
+  let id = "";
+  let extractedSlug = "";
+
+  if (Array.isArray(slug)) {
+    id = slug[0];
+    extractedSlug = slug[slug.length - 1];
+  } else if (typeof slug === "string") {
+    id = slug;
+    extractedSlug = slug;
+  }
+
   const data = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [

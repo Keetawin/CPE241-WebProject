@@ -6,6 +6,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -22,7 +23,11 @@ export default function Dashboard() {
 
   if (!event) {
     // Handle case when event data is not yet loaded
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <CircularProgress color="inherit" />
+      </div>
+    );
   }
 
   return (
@@ -63,9 +68,21 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      {/* Render additional event details */}
-      <h1 className="text-2xl font-bold py-6">All Event</h1>
-      <div className="grid grid-cols-3 gap-8 w-full h-full mx-10 ">
+
+      <h1 className="text-2xl font-bold py-6">All Events</h1>
+      <div className="grid grid-cols-3 gap-8 w-full h-full mx-10">
+        {event.map((eventData) => (
+          <Link
+            href={`/organize/${id}/${eventData.event_id}`}
+            key={eventData.event_id}
+            className="px-4 py-12 font-medium text-[#060047] border border-gray-200 rounded-lg shadow hover:bg-slate-50 bg-white"
+          >
+            <h5 className="mb-2 flex justify-center text-4xl font-bold tracking-tight text-[#060047]">
+              {eventData.event_name}
+            </h5>
+            <div className="flex justify-center"> Event</div>
+          </Link>
+        ))}
         <Link
           href={`/organize/${id}/create_event`}
           className="px-4 py-12 font-medium text-[#060047] border border-gray-200 rounded-lg shadow hover:bg-slate-50 bg-white"
@@ -73,7 +90,7 @@ export default function Dashboard() {
           <h5 className="mb-2 flex justify-center text-4xl font-bold tracking-tight text-[#060047]">
             +
           </h5>
-          Create Event
+          <div className="flex justify-center">Create Event</div>
         </Link>
       </div>
     </div>
