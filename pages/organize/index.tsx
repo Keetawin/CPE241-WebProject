@@ -8,16 +8,26 @@ import organize from "./organize_mock"; // Replace with your actual event data
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
+import { Alert, Checkbox, Collapse, IconButton, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
+import PaymentSelect from "@/components/payment_select";
 
-export default function Organize({ userOrganize }) {
+export default function Organize({ userOrganize, userPayment }) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("")
+  const [alert, setAlert] = useState("success")
   const [organizeData, setOrganizeData] = useState({
     name: "",
     telephone: "",
     website: "",
+    payment_info_id: 0,
   });
-
+  const censorValue = (value: string) => {
+    const visibleDigits = 4; // Number of visible digits at the end
+    const maskedValue = '*'.repeat(value.length - visibleDigits) + value.slice(-visibleDigits);
+    return maskedValue;
+  };
   function closeModal() {
     setIsOpen(false);
   }
@@ -34,21 +44,31 @@ export default function Organize({ userOrganize }) {
   };
 
   const handleCreateOrganize = async () => {
-    const { name, telephone, website } = organizeData;
+    const { name, telephone, website, payment_info_id } = organizeData;
 
     const organizeDataPayload = {
       user_id: session?.user?.user_id, // Use the user ID from the session
       name: name,
       tel: telephone,
       website: website,
+      payment_info_id: payment_info_id
     };
 
     try {
       const response = await axios.post(
         "https://ticketapi.fly.dev/create_organize",
         organizeDataPayload
-      );
-      closeModal();
+      ).then((res)=>{
+        if(res.status == 200){
+            setAlert('success')
+        }
+        if(res.status == 201){
+            setAlert('error')
+        }
+        setAlertMessage(res.data)
+        setAlertOpen(true)
+      })
+      // closeModal();
       // Handle success response here
       console.log(response);
     } catch (error) {
@@ -134,14 +154,15 @@ export default function Organize({ userOrganize }) {
                               >
                                 Organize Name
                               </label>
-                              <input
+                              <TextField 
                                 id="name"
                                 name="name"
-                                type="text"
-                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
                                 value={organizeData.name}
-                                onChange={handleInputChange}
+                                type="text"
                                 required
+                                onChange={handleInputChange}
+                                sx={{width: "40ch"}}
+                                variant="outlined" 
                               />
                             </div>
 
@@ -152,14 +173,14 @@ export default function Organize({ userOrganize }) {
                               >
                                 Telephone
                               </label>
-                              <input
+                              <TextField 
                                 id="telephone"
                                 name="telephone"
-                                type="text"
-                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
                                 value={organizeData.telephone}
+                                type="text"
                                 onChange={handleInputChange}
-                                required
+                                sx={{width: "40ch"}}
+                                variant="outlined" 
                               />
                             </div>
                             <div className="mb-4">
@@ -169,32 +190,61 @@ export default function Organize({ userOrganize }) {
                               >
                                 Website
                               </label>
-                              <input
+                              <TextField 
                                 id="website"
                                 name="website"
-                                type="text"
-                                className="w-full h-4 sm:h-9 border-b-2 border-gray-300 focus:border-[#E90064] outline-none"
                                 value={organizeData.website}
+                                type="text"
                                 onChange={handleInputChange}
-                                required
+                                sx={{width: "40ch"}}
+                                variant="outlined" 
                               />
                             </div>
-
-                            <div className="mt-6">
+                            <label 
+                              htmlFor="website"
+                              className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
+                            >
+                              Payment Method
+                            </label>
+                            <PaymentSelect 
+                            userPayment={userPayment}
+                            required={true}
+                            value={organizeData.payment_info_id}
+                            onChange={(e: { target: { value: string; }; })=>{setOrganizeData((prevData) => ({ ...prevData, ["payment_info_id"]: e.target.value, }))}}
+                            />
+                            <Collapse in={alertOpen}>
+                              <Alert
+                              severity={alert}
+                              action={
+                                  <IconButton
+                                  aria-label="close"
+                                  color="inherit"
+                                  size="small"
+                                  onClick={() => {
+                                      setAlertOpen(false);
+                                  }}
+                                  >
+                                      x
+                                  </IconButton>
+                              }
+                              sx={{ mb: 2 }}
+                              >
+                                  {alertMessage}
+                              </Alert>
+                            </Collapse>
+                            <div className="mt-6 ">
                               <button
                                 type="button"
                                 className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
                                   !organizeData.name ||
-                                  !organizeData.telephone ||
-                                  !organizeData.website
+                                  !organizeData.payment_info_id 
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : "bg-[#060047] hover:bg-[#E90064]"
                                 }`}
                                 onClick={handleCreateOrganize}
                                 disabled={
                                   !organizeData.name ||
-                                  !organizeData.telephone ||
-                                  !organizeData.website
+                                  !organizeData.payment_info_id 
                                 }
                               >
                                 Create Organize
@@ -221,14 +271,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // console.log(user_id)
 
   try {
-    const response = await axios.get(
+    const response1 = await axios.get(
       `https://ticketapi.fly.dev/get_user_organize?user_id=${user_id}`
     );
-    const userOrganize = response.data;
+    const response2 = await axios.get(
+      `https://ticketapi.fly.dev/get_user_payment?user_id=${user_id}`
+    );
+    const userOrganize = response1.data
+    const userPayment = response2.data
 
     return {
       props: {
         userOrganize,
+        userPayment
       },
     };
   } catch (error) {
@@ -237,6 +292,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         userOrganize: null, // or handle error case as desired
+        userPayment: null
       },
     };
   }

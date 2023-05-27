@@ -9,6 +9,11 @@ import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 
 export default function PaymentMethod({userPayment}) {
+  const censorValue = (value: string) => {
+    const visibleDigits = 4; // Number of visible digits at the end
+    const maskedValue = '*'.repeat(value.length - visibleDigits) + value.slice(-visibleDigits);
+    return maskedValue;
+  };
   const router = useRouter()
   // console.log(userPayment)
   return (
@@ -41,7 +46,7 @@ export default function PaymentMethod({userPayment}) {
                         <div className="flex flex-col">
                           <h4 className="text-sm font-light">Credit/Debit Card</h4>
                           <h2 className="text-3xl font-semibold text-[#060047]">{payment.payment_name}</h2>
-                          <h3 className="text-xl">{payment.card_id}</h3>
+                          <h3 className="text-xl">{censorValue(payment.card_id.toString())}</h3>
                           <h3 className="text-sm">expired date: {payment.expired_date.split('T')[0]}</h3>
                         </div>
                       </div>
@@ -54,7 +59,7 @@ export default function PaymentMethod({userPayment}) {
                         <div className="flex flex-col">
                           <h4 className="text-sm font-light">Prompt Pay</h4>
                           <h2 className="text-3xl font-semibold text-[#060047]">{payment.payment_name}</h2>
-                          <h3 className="text-xl">{payment.prompt_pay}</h3>
+                          <h3 className="text-xl">{censorValue(payment.prompt_pay.toString())}</h3>
                         </div>
                       </div>
                   )

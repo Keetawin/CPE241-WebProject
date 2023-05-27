@@ -62,7 +62,7 @@ export default function PaymentMethod() {
         if(paymentMethod == "Credit Card"){
             body = {
                 "user_id": session?.user?.user_id,
-                "card_id": parseInt(cardNumber),
+                "card_id": cardNumber,
                 "payment_name": cardName,
                 "payment_method": paymentMethod,
                 "expired_date": expireDate.$d && new Date(expireDate.$d).toISOString().split('T')[0] || expireDate
