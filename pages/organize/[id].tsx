@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-10">
-      <h1 className="text-2xl font-bold py-6">Dashboard</h1>
+      <h1 className="text-3xl font-bold py-6">All Event Dashboard</h1>
 
       <div className="grid grid-cols-3 gap-8 w-full h-full mx-10 ">
         <div className="flex gap-6">
@@ -69,18 +69,18 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold py-6">All Events</h1>
+      <h1 className="text-2xl font-bold py-6">Event Dashboard</h1>
       <div className="grid grid-cols-3 gap-8 w-full h-full mx-10">
         {event.map((eventData) => (
           <Link
-            href={`/organize/${id}/${eventData.event_id}`}
+            href={`/organize/${id}/dashboard/${eventData.event_id}`}
             key={eventData.event_id}
             className="px-4 py-12 font-medium text-[#060047] border border-gray-200 rounded-lg shadow hover:bg-slate-50 bg-white"
           >
             <h5 className="mb-2 flex justify-center text-4xl font-bold tracking-tight text-[#060047]">
               {eventData.event_name}
             </h5>
-            <div className="flex justify-center"> Event</div>
+            <div className="flex justify-center">Dashboard</div>
           </Link>
         ))}
         <Link
@@ -93,6 +93,24 @@ export default function Dashboard() {
           <div className="flex justify-center">Create Event</div>
         </Link>
       </div>
+
+      <h1 className="text-2xl font-bold py-6">Seat Type</h1>
+      <div className="grid grid-cols-3 gap-8 w-full h-full mx-10">
+        {event.map((eventData) => (
+          <Link
+            href={`/organize/${id}/seat_type/${eventData.event_id}`}
+            key={eventData.event_id}
+            className="px-4 py-12 font-medium text-[#060047] border border-gray-200 rounded-lg shadow hover:bg-slate-50 bg-white"
+          >
+            <h5 className="mb-2 flex justify-center text-4xl font-bold tracking-tight text-[#060047]">
+              {eventData.event_name}
+            </h5>
+            <div className="flex justify-center">Seat Type</div>
+          </Link>
+        ))}
+      </div>
+
+      <h1 className="text-2xl font-bold py-6">Add Member</h1>
     </div>
   );
 }

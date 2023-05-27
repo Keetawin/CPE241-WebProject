@@ -178,7 +178,7 @@ const EventDetail = ({ event }: Props) => {
             <div className="text-lg">{event.location}</div>
             <div className="flex gap-10">
               <p className="text-lg font-semibold">Event followers</p>
-              <p className="text-lg font-semibold">{NumberOfFollower}</p>
+              <p className="text-lg font-semibold">{event.follower}</p>
             </div>
           </div>
           <div className="flex mt-6 justify-end">

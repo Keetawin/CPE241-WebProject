@@ -189,6 +189,7 @@ export default function CreateEvent() {
   const router = useRouter();
   const { id } = router.query;
   const [selectedValue, setSelectedValue] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -215,9 +216,13 @@ export default function CreateEvent() {
 
       console.log("Response:", response.data);
       // Handle success or display a success message
+
+      // Redirect to the desired URL
+      router.push(`/organize/${id}`);
     } catch (error) {
       console.error("Error:", error);
       // Handle error or display an error message
+      setErrorMessage("An error occurred. Please try again later.");
     }
   };
 
@@ -286,7 +291,8 @@ export default function CreateEvent() {
                 <section>
                   <div
                     {...getRootProps({
-                      className: "border-2 border-dashed rounded p-4 mb-4",
+                      className:
+                        "border-2 border-dashed rounded p-4 mb-4 cursor-pointer",
                     })}
                   >
                     <input {...getInputProps()} required />
@@ -482,10 +488,13 @@ export default function CreateEvent() {
                   className="hover:shadow-form rounded-md bg-[#060047] py-3 mb-4 px-8 text-base font-semibold text-white outline-none"
                   onClick={handleSubmit}
                 >
-                  Submit
+                  Create Event
                 </button>
               </div>
             </form>
+            {errorMessage && (
+              <p className="text-red-500 mb-4">{errorMessage}</p>
+            )}
           </div>
         </div>
       </div>
