@@ -7,6 +7,7 @@ import React from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 type Event = {
   event_id: number;
@@ -256,14 +257,28 @@ const EventDetail = ({ event }: Props) => {
                 * All Prices exclude VAT
                 <br />* Some fees may be applied
               </p>
-              <button
-                className={`mt-4 w-full text-white font-semibold text-xl py-2 rounded ${
-                  totalTickets === 0 ? "bg-gray-400" : "bg-[#060047]"
-                }`}
-                disabled={totalTickets === 0}
+              <Link
+                href={{
+                  pathname: `/events/checkout/[id]`,
+                  query: {
+                    id: event.event_id,
+                    eventName: event.event_name,
+                    ticketType: JSON.stringify(selectedTickets),
+                    totalPrice: totalPrice
+                  }
+                }}
+                key={event.event_id}
               >
-                Buy Tickets
-              </button>
+                <button
+                  className={`mt-4 w-full text-white font-semibold text-xl py-2 rounded ${
+                    totalTickets === 0 ? "bg-gray-400" : "bg-[#060047]"
+                  }`}
+                  disabled={totalTickets === 0}
+                >
+                  Buy Tickets
+                </button>
+              </Link>
+
             </div>
           </div>
         </div>
