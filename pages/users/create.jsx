@@ -204,7 +204,6 @@ const Account = () => {
                   value={DOB}
                   error={missing.includes("Date of Birth")}
                   onChange={(e)=>{
-                    // console.log(e)
                     console.log(new Date(e.$d).toISOString().split('T')[0])
                     setDOB(e)
                   }}

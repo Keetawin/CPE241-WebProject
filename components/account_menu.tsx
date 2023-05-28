@@ -3,7 +3,7 @@ import Link from "next/link";
 const MenuBar = () => {
   return (
     <div className="max-w-2xl mx-auto">
-      <aside className="w-64 rounded-lg border-2" aria-label="Sidebar">
+      <aside className="w-64 rounded-lg border-2 bg-white" aria-label="Sidebar">
         <div className="px-3 py-4 overflow-y-auto rounded ">
           <ul className="space-y-2">
             <li>
