@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
 
 type Ticket = {
+  ticket_id: string;
   event_id: string;
   seat_type: string;
   seat_no: string;
@@ -15,9 +16,9 @@ type Ticket = {
 };
 
 type Event = {
-  event_id: string;
   event_name: string;
   event_startdate: string;
+  event_enddate: string;
   location: string;
   poster: string;
 };
@@ -64,7 +65,7 @@ export default function Tickets() {
   
 
   const formatDate = (dateString: string) => {
-    return dayjs(dateString).format("YYYY-MM-DD");
+    return dayjs(dateString).format("DD-MM-YYYY");
   };
 
   const tabs = [
@@ -109,48 +110,64 @@ export default function Tickets() {
   
             {activeTab === 1 && (
               <main>
-              {tickets.map((ticket) => {
-                if (new Date(ticket.ticket_date) >= new Date()) {
-                  const event = events.find((event) => event.event_id === ticket.event_id);
-                  if (event) {
-                    return (
-                      <div className="pl-10 w-full" key={event.event_id}>
-                        <Test
-                          img={event.poster}
-                          eventName={event.event_name}
-                          location={event.location}
-                          eventDate={event.event_startdate}
-                        />
-                      </div>
-                    );
-                  }
-                }
-                <p>No Ticket found.</p>
-              })}
-            </main>
+                {tickets.filter((ticket) => new Date(ticket.ticket_date) >= new Date()).length > 0 ? (
+                  tickets.map((ticket) => {
+                    if (new Date(ticket.ticket_date) >= new Date()) {
+                      const event = events.find((event) => event.event_id === ticket.event_id);
+                      if (event) {
+                        return (
+                          <div className="pl-10 w-full" key={event.event_id}>
+                            <Test
+                              ticketid={ticket.ticket_id}
+                              eventid={ticket.event_id}
+                              img={event.poster}
+                              eventName={event.event_name}
+                              location={event.location}
+                              eventStart={formatDate(event.event_startdate)}
+                              eventEnd={formatDate(event.event_enddate)}
+                              refund={ticket.refundable}
+                            />
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })
+                ) : (
+                  <p style={{ marginTop: '40px', marginLeft: '30px' }}>No Active Tickets found.</p>
+                )}
+              </main>
             )}
-  
+
             {activeTab === 2 && (
               <main>
-              {tickets.map((ticket) => {
-                if (new Date(ticket.ticket_date) < new Date()) {
-                  const event = events.find((event) => event.event_id === ticket.event_id);
-                  if (event) {
-                    return (
-                      <div className="pl-10 w-full" key={event.event_id}>
-                        <Test
-                          img={event.poster}
-                          eventName={event.event_name}
-                          location={event.location}
-                          eventDate={event.event_startdate}
-                        />
-                      </div>
-                    );
-                  }
-                }
-                <p>No Ticket found.</p>
-              })}
-            </main>
+                {tickets.filter((ticket) => new Date(ticket.ticket_date) < new Date()).length > 0 ? (
+                  tickets.map((ticket) => {
+                    if (new Date(ticket.ticket_date) < new Date()) {
+                      const event = events.find((event) => event.event_id === ticket.event_id);
+                      if (event) {
+                        return (
+                          <div className="pl-10 w-full" key={event.event_id}>
+                            <Test
+                              ticketid={ticket.ticket_id}
+                              eventid={ticket.event_id}
+                              img={event.poster}
+                              eventName={event.event_name}
+                              location={event.location}
+                              eventStart={formatDate(event.event_startdate)}
+                              eventEnd={formatDate(event.event_enddate)}
+                              refund={ticket.refundable}
+                            />
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })
+                ) : (
+                  <p style={{ marginTop: '40px', marginLeft: '30px' }}>No Active Tickets found.</p>
+                )}
+              </main>
             )}
           </div>
         </div>
