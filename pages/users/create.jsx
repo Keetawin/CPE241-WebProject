@@ -94,7 +94,8 @@ const Account = () => {
               DOB: body.DOB,
               gender: body.gender,
               f_name: body.f_name,
-              l_name: body.l_name        
+              l_name: body.l_name,
+              user_role: "User"      
             }})
         })
       } catch (error) {

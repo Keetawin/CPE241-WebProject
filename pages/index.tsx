@@ -17,7 +17,7 @@ export default function Home({categories, event_type}) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(session);
+    // console.log(session);
     if (session && session.callbackUrl && !session.user.user_id) {
       router.push(session.callbackUrl);
     }

@@ -25,6 +25,7 @@ export const authOptions = {
         session.user.gender = token.gender
         session.user.f_name = token.f_name
         session.user.l_name = token.l_name
+        session.user.user_role = token.user_role
       }
       await axios
       .get(`https://ticketapi.fly.dev/get_user?email=${session.user.email}`)
@@ -38,13 +39,8 @@ export const authOptions = {
           session.user.gender = res.data[0].gender
           session.user.f_name = res.data[0].f_name
           session.user.l_name = res.data[0].l_name
-          // axios
-          // .get(`https://ticketapi.fly.dev/get_user_followed_event?user_id=${res.data[0].user_id}`)
-          // .then((res)=>{
-          //   // console.log(res)
-          //   // console.log(res.data.map(e=>e.event_id))
-          //   session.user.follow_event_id = res.data.map(e=>e.event_id)
-          // })
+          session.user.user_role = res.data[0].user_role
+
         }
       })
       // console.log(session)
@@ -58,6 +54,7 @@ export const authOptions = {
           token.f_name = session.user.f_name
           token.l_name = session.user.l_name
           token.tel = session.user.tel
+          token.user_role = session.user.user_role
         }
       }
       
