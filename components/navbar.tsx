@@ -13,7 +13,7 @@ import {
   SquaresPlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import {
   ChevronDownIcon,
   PhoneIcon,
@@ -64,7 +64,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
   const { data: session, status } = useSession();
   const router = useRouter();
   // console.log(session)
@@ -87,36 +87,46 @@ export default function Navbar() {
         </div>
         <Paper
           component="form"
-          sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+          sx={{
+            p: "2px 4px",
+            display: "flex",
+            alignItems: "center",
+            width: 400,
+          }}
         >
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             value={search}
             placeholder="Event search"
-            inputProps={{ 'aria-label': 'Search for Event' }}
-            onKeyDown={(e)=>{
-              if (e.key === 'Enter') {
-                e.preventDefault()
+            inputProps={{ "aria-label": "Search for Event" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
                 const queryParam = encodeURIComponent(search);
-                if(queryParam.length !==0){
+                if (queryParam.length !== 0) {
                   router.push(`/events?name=${queryParam}`);
-                }else{
+                } else {
                   router.push(`/events?name=${null}`);
                 }
               }
             }}
-            onChange={(e)=>{setSearch(e.target.value)}}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
           />
-          <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={(e)=>{
+          <IconButton
+            type="button"
+            sx={{ p: "10px" }}
+            aria-label="search"
+            onClick={(e) => {
               const queryParam = encodeURIComponent(search);
-              if(queryParam.length !==0){
+              if (queryParam.length !== 0) {
                 router.push(`/events?name=${queryParam}`);
-              }else{
+              } else {
                 router.push(`/events?name=${null}`);
               }
-            }
-
-          }>
+            }}
+          >
             <SearchIcon />
           </IconButton>
         </Paper>
@@ -132,7 +142,7 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <div className="flex  mr-10 justify-center align-middle mt-2">
-            <Link href="/organize" >
+            <Link href="/organize">
               <span className=" font-semibold text-xl text-white">
                 Organize
               </span>
@@ -189,16 +199,16 @@ export default function Navbar() {
                           My Tickets
                         </Link>
                         <Link
-                          href="/organize"
+                          href="/users/follow_event"
                           className="popover-dropdown-item min-w-full"
                         >
-                          Create Event
+                          Followed Events
                         </Link>
                         <Link
                           href="/users/setting"
                           className="popover-dropdown-item min-w-full"
                         >
-                          Account settings
+                          Account Settings
                         </Link>
                         <button
                           type="button"
