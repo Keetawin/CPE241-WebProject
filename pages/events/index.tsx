@@ -80,6 +80,7 @@ export default function AllEventsPages({categories, event_type}) {
           <div className="flex flex-col mx-2">
             <label>Categories</label>
             <CategorieSelect
+              sx={{width: "45ch", backgroundColor: "#ffffff"}}
               value={categoriesSearch}
               onChange={(e)=>{setCategoriesSearch(e.target.value)}}
               categories={categories}
@@ -93,6 +94,7 @@ export default function AllEventsPages({categories, event_type}) {
           <div className="flex flex-col mx-2">
             <label>Event Type</label>
             <EventTypeSelect
+              sx={{width: "45ch", backgroundColor: "#ffffff"}}
               value={eventType}
               onChange={(e)=>{setEventType(e.target.value)}}
               eventType={event_type}

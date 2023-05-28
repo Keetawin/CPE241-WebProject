@@ -1,12 +1,12 @@
 import { MenuItem, OutlinedInput, Select } from "@mui/material";
 
-export default function EventTypeSelect({onChange, value, required, eventType }: Props) {
+export default function EventTypeSelect({onChange, value, required, eventType, sx }: Props) {
   // console.log(categories)
 
   return (
     <Select
       required={required}
-      sx={{width: "45ch"}}
+      sx={sx}
       value={value}
       onChange={onChange}
       input={<OutlinedInput label="Tag" />}

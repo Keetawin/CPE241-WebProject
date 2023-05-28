@@ -2,13 +2,13 @@ import { Box, Chip, MenuItem, OutlinedInput, Select } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import axios from "axios";
 
-export default function CategorieSelect({onChange, value, required, categories, onDelete }: Props) {
+export default function CategorieSelect({onChange, value, required, categories, onDelete, sx }: Props) {
   // console.log(categories)
 
   return (
     <Select
       required={required}
-      sx={{width: "45ch"}}
+      sx={sx}
       value={value}
       onChange={onChange}
       multiple
