@@ -44,7 +44,7 @@ export default function AllEventsMusic() {
   return (
     <main className="container mx-auto px-10">
       <h1 className="text-2xl font-bold py-4">Music & Festival</h1>
-      <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-4 flex flex-col gap-6">
+      <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 flex flex-col gap-6">
         {events && events.length > 0 ? (
           events.map((event) => (
             <Link

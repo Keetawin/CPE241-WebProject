@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import CategorieSelect from "@/components/category_select";
 import { GetServerSideProps } from "next";
+import EventTypeSelect from "@/components/event_type_select";
 
 type Event = {
   event_id: number;
@@ -25,6 +26,7 @@ export default function AllEventsPages({categories, event_type}) {
   const router = useRouter()
   const [loading, setLoading] = useState(true);
   const [eventName, setEventName] = useState("")
+  const [eventType, setEventType] = useState("")
   const [categoriesSearch, setCategoriesSearch] = useState<number[]>([])
   const query = router.query
   console.log(categoriesSearch)
@@ -41,6 +43,9 @@ export default function AllEventsPages({categories, event_type}) {
     let querys = []
     if(eventName && eventName.length !== 0 && eventName !== "null"){
       querys.push(`event_name=${eventName}`)
+    }
+    if(eventType && eventType.length !== 0 && eventType != "0"){
+      querys.push(`event_type_id=${eventType}`)
     }
     if(categoriesSearch.length != 0){
       querys.push(`categories_id=[${categoriesSearch.join(', ')}]`)
@@ -59,7 +64,7 @@ export default function AllEventsPages({categories, event_type}) {
         // console.log(response);
       })
       .catch((error) => console.error(error));
-  }, [eventName, categoriesSearch]);
+  }, [eventName, categoriesSearch, eventType]);
 
   const formatDate = (dateString: string) => {
     return dayjs(dateString).format("DD MMMM YYYY");
@@ -71,22 +76,34 @@ export default function AllEventsPages({categories, event_type}) {
     <main>
       <div className="px-10 pt-12">
         <h2 className="text-2xl font-semibold">Filter</h2>
-        <div className="flex flex-col">
-          <label>Categories</label>
-          <CategorieSelect
-            value={categoriesSearch}
-            onChange={(e)=>{setCategoriesSearch(e.target.value)}}
-            categories={categories}
-            onDelete={
-              (value: string) => {
-                setCategoriesSearch((current) => current.filter((item) => item !== value));
+        <div className="flex">
+          <div className="flex flex-col mx-2">
+            <label>Categories</label>
+            <CategorieSelect
+              sx={{width: "45ch", backgroundColor: "#ffffff"}}
+              value={categoriesSearch}
+              onChange={(e)=>{setCategoriesSearch(e.target.value)}}
+              categories={categories}
+              onDelete={
+                (value: string) => {
+                  setCategoriesSearch((current) => current.filter((item) => item !== value));
+                }
               }
-            }
-          />
+              />
+          </div>
+          <div className="flex flex-col mx-2">
+            <label>Event Type</label>
+            <EventTypeSelect
+              sx={{width: "45ch", backgroundColor: "#ffffff"}}
+              value={eventType}
+              onChange={(e)=>{setEventType(e.target.value)}}
+              eventType={event_type}
+            />
+          </div>
         </div>
       </div>
       <div className="px-10 py-8">
-        <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-4 flex flex-col gap-2 ">
+        <div className="card-list md:grid sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 flex flex-col gap-6 ">
           {displayedEvents && displayedEvents.length > 0 ? (
             displayedEvents.map((event) => (
               <Link
