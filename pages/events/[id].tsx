@@ -26,15 +26,8 @@ type Props = {
   event: Event;
 };
 
-const ticketTypes = [
-  { name: "Regular", price: 100, quantity: 0, remaining: 5 },
-  { name: "VIP", price: 500, quantity: 0, remaining: 7 },
-  { name: "Gold", price: 1000, quantity: 0, remaining: 4 },
-  { name: "Premium", price: 2000, quantity: 0, remaining: 3 },
-];
-
 const EventDetail = ({ event }: Props) => {
-  const [selectedTickets, setSelectedTickets] = useState(ticketTypes);
+  const [selectedTickets, setSelectedTickets] = useState([]);
   const [followed, setFollowed] = useState<boolean>(false);
   const [eventType, setEventType] = useState<string | null>(null);
   const [NumberOfFollower, setNumberOfFollower] = useState<number>(0);
@@ -46,6 +39,37 @@ const EventDetail = ({ event }: Props) => {
   const formattedEndDate = event?.event_enddate
     ? dayjs(event.event_enddate).format("D MMMM YYYY")
     : "";
+
+  // Rest of the code...
+
+  useEffect(() => {
+    const fetchTicketTypes = async () => {
+      try {
+        const response = await axios.get(
+          `https://ticketapi.fly.dev/get_event_seat_type?event_id=${event.event_id}`
+        );
+        const ticketTypeData = response.data;
+
+        const updatedTicketTypes = ticketTypeData.map((ticketType) => ({
+          name: ticketType.seat_type,
+          price: parseFloat(ticketType.price),
+          quantity: 0,
+          remaining: ticketType.quantity_limit,
+          sale_enddate: dayjs(ticketType.sale_enddate).format("D MMMM YYYY"), // Format the date
+        }));
+
+        setSelectedTickets(updatedTicketTypes);
+      } catch (error) {
+        console.error("Error fetching ticket types:", error);
+      }
+    };
+
+    if (event && event.event_id) {
+      fetchTicketTypes();
+    }
+  }, [event.event_id]);
+
+  // Rest of the code...
 
   // console.log(event)
   useEffect(() => {
@@ -166,8 +190,9 @@ const EventDetail = ({ event }: Props) => {
           )}
         </div>
         <div>
+          <div className="mb-2 text-lg text-[#E90064]">{eventType}</div>
           <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
-          <div className="mb-2 text-lg">{eventType}</div>
+
           <div className="flex flex-col ml-4 gap-3">
             <p className=" text-lg font-medium">
               {formattedStartDate} - {formattedEndDate}
@@ -237,7 +262,7 @@ const EventDetail = ({ event }: Props) => {
                   </div>
                 </div>
                 <div className="px-4 py-4 font-medium text-red-500">
-                  Available until {formattedStartDate}
+                  Available until {ticketType.sale_enddate}
                 </div>
                 <div className="px-4 pb-4 font-medium  text-[#060047]">
                   {ticketType.remaining} remaining
@@ -264,8 +289,8 @@ const EventDetail = ({ event }: Props) => {
                     id: event.event_id,
                     eventName: event.event_name,
                     ticketType: JSON.stringify(selectedTickets),
-                    totalPrice: totalPrice
-                  }
+                    totalPrice: totalPrice,
+                  },
                 }}
                 key={event.event_id}
               >
@@ -278,7 +303,6 @@ const EventDetail = ({ event }: Props) => {
                   Buy Tickets
                 </button>
               </Link>
-
             </div>
           </div>
         </div>

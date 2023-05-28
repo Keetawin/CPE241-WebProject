@@ -70,7 +70,7 @@ export default function EventDashBoard() {
   const [availableSeats, setAvailableSeats] = useState([]);
 
   const [formData, setFormData] = useState({
-    event_id: "",
+    event_id: eventId,
     seat_type: "",
     price: "",
     quantity_limit: "",
@@ -91,7 +91,7 @@ export default function EventDashBoard() {
         const response = await axios.get(
           `https://ticketapi.fly.dev/get_available_seat?event_id=${eventId}`
         );
-        setAvailableSeats(response.data);
+        setAvailableSeats(response.data.available_seat);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -145,8 +145,8 @@ export default function EventDashBoard() {
       // Handle the response or perform any necessary actions
       console.log(response.data);
 
-      // Refresh the page or update the seat numbers data
-      // Example: Call a function to fetch and update seat numbers data
+      // Refresh the page
+      window.location.reload();
     } catch (error) {
       console.error("Error:", error);
       // Handle the error or display an error message
@@ -687,17 +687,15 @@ export default function EventDashBoard() {
                       <h2 className="font-semibold text-xl">
                         {seatType.seat_type}
                       </h2>
-                      {availableSeats[seatType.seat_type_id] &&
-                      availableSeats[seatType.seat_type_id].length > 0 ? (
-                        <div className="flex gap-4 items-center">
-                          <button
-                            className="inline-flex justify-center rounded-md border border-transparent px-2 text-2xl font-semibold text-white bg-[#060047] hover:bg-[#c60056e6] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                            onClick={() => openSecondModal(seatType)}
-                          >
-                            +
-                          </button>
-                        </div>
-                      ) : null}
+
+                      <div className="flex gap-4 items-center">
+                        <button
+                          className="inline-flex justify-center rounded-md border border-transparent px-2 text-2xl font-semibold text-white bg-[#060047] hover:bg-[#c60056e6] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                          onClick={() => openSecondModal(seatType)}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                     <div className="px-4 py-4 font-medium text-red-500">
                       Available until {formatEventDate(seatType.sale_enddate)}
@@ -712,13 +710,6 @@ export default function EventDashBoard() {
                   Now Not have seat type. Please create one.
                 </p>
               )}
-            </div>
-
-            <div className="flex justify-between mt-1 py-4">
-              <h1 className=" text-2xl font-bold">Add Member</h1>
-              <button className="px-2 py-2 rounded  bg-[#E90064] hover:bg-[#c60056e6] text-white font-medium text-base">
-                Add Member
-              </button>
             </div>
           </>
         )}

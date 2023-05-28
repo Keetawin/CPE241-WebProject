@@ -11,8 +11,9 @@ import EducationEvents from "./events/component/education";
 import SportEvents from "./events/component/sport";
 import { GetServerSideProps } from "next";
 import axios from "axios";
+import EventsUpcoming from "./events/component/upcoming";
 
-export default function Home({categories, event_type}) {
+export default function Home({ categories, event_type }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -39,7 +40,7 @@ export default function Home({categories, event_type}) {
               View All
             </Link>
           </div>
-          <AllEventsPage categories={categories} event_type={event_type} />
+          <EventsUpcoming />
 
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold py-4">Music & Festival</h1>
@@ -89,16 +90,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         categories: categories,
-        event_type: event_type
+        event_type: event_type,
       },
     };
-    
   } catch (error) {
     console.error(error);
     return {
       props: {
         categories: null,
-        event_type: null
+        event_type: null,
       },
     };
   }
