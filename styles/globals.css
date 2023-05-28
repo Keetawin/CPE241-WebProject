@@ -30,10 +30,6 @@
   background-color: #f3f4f6;
 }
 
-body{
-  background-color: #F4F2F6;
-}
-
 .event-title {
   display: -webkit-box;
   -webkit-line-clamp: 2; /* Adjust the number of lines as needed */

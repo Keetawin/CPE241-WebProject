@@ -38,17 +38,17 @@ const Footer = () => {
                 </Link>
               </li>
               <li className="mb-2">
-                <Link href="/events/upcoming" className="hover:text-gray-200">
+                <Link href="#" className="hover:text-gray-200">
                   Events
                 </Link>
               </li>
               <li className="mb-2">
-                <Link href="/users/ticket" className="hover:text-gray-200">
+                <Link href="#" className="hover:text-gray-200">
                   Tickets
                 </Link>
               </li>
               <li className="mb-2">
-                <Link href="/about" className="hover:text-gray-200">
+                <Link href="#" className="hover:text-gray-200">
                   About Us
                 </Link>
               </li>
@@ -58,26 +58,23 @@ const Footer = () => {
             <h3 className="text-lg font-bold text-white mb-4">Follow Us</h3>
             <div className="flex items-center justify-center md:justify-start">
               <Link
-                href="https://www.facebook.com/cpe.kmutt/"
+                href="#"
                 className="text-white hover:text-white mr-4"
                 aria-label="Facebook"
-                target="_blank"
               >
                 <FaFacebook className="h-6 w-6" />
               </Link>
               <Link
-                href="https://www.linkedin.com/school/kmutt/mycompany/"
+                href="#"
                 className="text-white hover:text-white mr-4"
                 aria-label="Linkedin"
-                target="_blank"
               >
                 <FaLinkedin className="h-6 w-6" />
               </Link>
               <Link
-                href="https://www.instagram.com/cpe_studentunion/"
+                href="#"
                 className="text-white hover:text-white"
                 aria-label="Instagram"
-                target="_blank"
               >
                 <FaInstagram className="h-6 w-6" />
               </Link>

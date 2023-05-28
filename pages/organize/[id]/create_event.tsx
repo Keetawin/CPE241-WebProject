@@ -17,11 +17,6 @@ import { v4 as uuidv4 } from "uuid";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { GetServerSideProps } from "next";
-import EventTypeSelect from "@/components/event_type_select";
-import CategorieSelect from "@/components/category_select";
-import { Button } from "@mui/material";
-import LocationTextField from "@/components/location_text_field";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,7 +29,93 @@ const MenuProps = {
   },
 };
 
-export default function CreateEvent({categories, event_type}) {
+const event_type = [
+  "Party",
+  "Concert",
+  "Mini Concert",
+  "Festival",
+  "Meet And Greet",
+  "Run",
+  "Bike",
+  "Boxing",
+  "Fitness",
+  "Esports",
+  "Tournament",
+  "League",
+  "Workshop",
+  "Class",
+  "Activation",
+  "Press Conference",
+  "Charity",
+  "Networking",
+  "Travel",
+  "Photography",
+  "Wedding",
+  "Incentive",
+  "Show",
+  "Pageant",
+  "Meetup",
+  "Camp",
+  "Conference",
+  "Expo",
+  "Exhibition",
+  "Trade Fair",
+  "Seminar",
+  "Meetings",
+  "Funding Raising",
+  "Webinar",
+  "Virtual Run",
+  "Online Course",
+  "Live Stream",
+  "Online Expo",
+];
+
+const menuItems = event_type.map((type, index) => (
+  <MenuItem key={index} value={index + 1}>
+    {type}
+  </MenuItem>
+));
+
+const names = [
+  "Technology",
+  "Art & Design",
+  "Beauty",
+  "Book",
+  "Business",
+  "Charity",
+  "Comedy",
+  "Concert",
+  "Education",
+  "E-Sport",
+  "Fashion",
+  "Finance & Accounting",
+  "Food & Drink",
+  "Food Delivery",
+  "Games",
+  "Health",
+  "Hobbies & Special Interests",
+  "Home & Furniture",
+  "Job Fair",
+  "Kids & Family",
+  "Movies",
+  "Music Festival",
+  "Nightlife",
+  "Party",
+  "Performing Arts",
+  "Real Estate",
+  "Run",
+  "Sales & Marketing",
+  "School Activities",
+  "Spirituality",
+  "Sports",
+  "Stage Plays",
+  "Talk Show",
+  "Travel",
+  "Vehicle",
+  "Experience",
+];
+
+export default function CreateEvent() {
   const [imageSrc, setImageSrc] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [uploadData, setUploadData] = useState(null);
@@ -103,8 +184,8 @@ export default function CreateEvent({categories, event_type}) {
 
   const theme = useTheme();
   const preSelectedValues: any[] = []; // Example array of pre-selected values
-  const [eventType, setEventType] = React.useState("");
-  const [categoriesSearch, setCategoriesSearch] = useState(preSelectedValues);
+  const [age, setAge] = React.useState("");
+  const [personName, setPersonName] = useState(preSelectedValues);
   const router = useRouter();
   const { id } = router.query;
   const [selectedValue, setSelectedValue] = useState("");
@@ -116,12 +197,12 @@ export default function CreateEvent({categories, event_type}) {
     // Prepare the payload
     const payload = {
       organize_id: Number(id), // Replace with the actual organize_id value
-      categories_id: categoriesSearch.map((index) => index + 1),
+      categories_id: personName.map((index) => index + 1),
       event_name: eventName,
       event_startdate: startDate,
       event_enddate: endDate,
       location: location,
-      event_type_id: eventType,
+      event_type_id: age,
       event_description: eventDescription,
       poster: imageUrl,
     };
@@ -145,18 +226,18 @@ export default function CreateEvent({categories, event_type}) {
     }
   };
 
-  const handleChange = (event: SelectChangeEvent<typeof categoriesSearch>) => {
+  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
     const {
       target: { value },
     } = event;
-    setCategoriesSearch(
+    setPersonName(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
   };
 
   const handleChangeSelect = (event: SelectChangeEvent) => {
-    setEventType(event.target.value as string);
+    setAge(event.target.value as string);
   };
 
   const [selectedTags, setSelectedTags] = useState([]);
@@ -171,11 +252,12 @@ export default function CreateEvent({categories, event_type}) {
   return (
     <main>
       <div className="container mx-auto px-10">
-        <div className="flex flex-col items-center justify-center py-10">
-          <h1 className=" text-3xl font-bold text-[#060047] py-4">Create Events</h1>
+        <h1 className=" text-2xl font-bold py-4">Create Events</h1>
+
+        <div className="flex items-center justify-center">
           {/* Author: FormBold Team */}
           {/* Learn More: https://formbold.com */}
-          <div className="mx-auto w-full max-w-[550px] my-5">
+          <div className="mx-auto w-full max-w-[550px]">
             <form onSubmit={handleSubmit}>
               <div className="mb-5">
                 <label
@@ -210,7 +292,7 @@ export default function CreateEvent({categories, event_type}) {
                   <div
                     {...getRootProps({
                       className:
-                        "border-2 border-dashed rounded p-4 mb-4 cursor-pointer bg-white h-24",
+                        "border-2 border-dashed rounded p-4 mb-4 cursor-pointer",
                     })}
                   >
                     <input {...getInputProps()} required />
@@ -249,12 +331,20 @@ export default function CreateEvent({categories, event_type}) {
                   <InputLabel id="demo-simple-select-label">
                     Event Type
                   </InputLabel>
-                  <EventTypeSelect
-                    sx={{backgroundColor: "#ffffff"}}
-                    value={eventType}
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={age}
+                    label="Event Type"
                     onChange={handleChangeSelect}
-                    eventType={event_type}
-                  />
+                    required
+                  >
+                    {event_type.map((type, index) => (
+                      <MenuItem key={index + 1} value={index + 1}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
               </div>
               <div className="mb-5">
@@ -268,73 +358,91 @@ export default function CreateEvent({categories, event_type}) {
                   <InputLabel id="demo-multiple-chip-label">
                     Categories
                   </InputLabel>
-                  <CategorieSelect
-                    sx={{backgroundColor: "#ffffff"}}
-                    value={categoriesSearch}
-                    onChange={(e)=>{setCategoriesSearch(e.target.value)}}
-                    categories={categories}
-                    onDelete={
-                      (value: string) => {
-                        setCategoriesSearch((current) => current.filter((item) => item !== value));
-                      }
+                  <Select
+                    labelId="demo-multiple-chip-label"
+                    id="demo-multiple-chip"
+                    multiple
+                    required
+                    value={personName}
+                    onChange={handleChange}
+                    input={
+                      <OutlinedInput id="select-multiple-chip" label="Chip" />
                     }
-                    />
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip key={value} label={names[value - 1]} /> // Assuming names array is zero-based
+                        ))}
+                      </Box>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {names.map(
+                      (
+                        name,
+                        index // Assuming names array is zero-based
+                      ) => (
+                        <MenuItem
+                          key={index + 1} // Incrementing ID
+                          value={index + 1} // Incrementing ID
+                        >
+                          {name}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
                 </FormControl>
               </div>
-              <div className="flex justify-between">
 
-                <div className="mb-5">
-                  <label
-                    htmlFor="start_date"
-                    className="mb-3 block text-base font-medium text-[#060047]"
-                  >
-                    Start Date
-                  </label>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Start Date"
-                      name="start_date"
-                      id="start_date"
-                      sx={{backgroundColor: "#ffffff"}}
-                      value={startDate}
-                      onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
-                          required
-                        />
-                      )}
-                    />
-                  </LocalizationProvider>
-                </div>
+              <div className="mb-5">
+                <label
+                  htmlFor="start_date"
+                  className="mb-3 block text-base font-medium text-[#060047]"
+                >
+                  Start Date
+                </label>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Start Date"
+                    name="start_date"
+                    id="start_date"
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                        required
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </div>
 
-                <div className="mb-5">
-                  <label
-                    htmlFor="end_date"
-                    className="mb-3 block text-base font-medium text-[#060047]"
-                  >
-                    End Date
-                  </label>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="End Date"
-                      name="end_date"
-                      id="end_date"
-                      sx={{backgroundColor: "#ffffff"}}
-                      value={endDate}
-                      onChange={(newValue) => setEndDate(newValue)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
-                          required
-                        />
-                      )}
-                    />
-                  </LocalizationProvider>
-                </div>
-              </div>          
+              <div className="mb-5">
+                <label
+                  htmlFor="end_date"
+                  className="mb-3 block text-base font-medium text-[#060047]"
+                >
+                  End Date
+                </label>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="End Date"
+                    name="end_date"
+                    id="end_date"
+                    value={endDate}
+                    onChange={(newValue) => setEndDate(newValue)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        className="w-full rounded-md border border-gray-400 bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#060047] focus:shadow-md"
+                        required
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </div>
 
               <div className="mb-5">
                 <label
@@ -353,7 +461,6 @@ export default function CreateEvent({categories, event_type}) {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                 />
-                  <LocationTextField onLocationSelect={(e)=>{setLocation(e)}} />
               </div>
 
               <div className="mb-5">
@@ -375,8 +482,14 @@ export default function CreateEvent({categories, event_type}) {
                   onChange={(e) => setEventDescription(e.target.value)}
                 />
               </div>
-              <div className="flex">
-                <Button className="ml-auto" type="submit" variant="contained" color="primary" style={{ backgroundColor: '#E90064' }}>Create Event</Button>
+              <div>
+                <button
+                  type="submit"
+                  className="hover:shadow-form rounded-md bg-[#060047] py-3 mb-4 px-8 text-base font-semibold text-white outline-none"
+                  onClick={handleSubmit}
+                >
+                  Create Event
+                </button>
               </div>
             </form>
             {errorMessage && (
@@ -388,26 +501,3 @@ export default function CreateEvent({categories, event_type}) {
     </main>
   );
 }
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const response1 = await axios.get("https://ticketapi.fly.dev/categories");
-    const response2 = await axios.get("https://ticketapi.fly.dev/event_types");
-    const categories = response1.data;
-    const event_type = response2.data;
-    return {
-      props: {
-        categories: categories,
-        event_type: event_type
-      },
-    };
-    
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        categories: null,
-        event_type: null
-      },
-    };
-  }
-};

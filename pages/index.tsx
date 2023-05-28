@@ -9,10 +9,8 @@ import Footer from "@/components/footer";
 import MusicEvents from "./events/component/music";
 import EducationEvents from "./events/component/education";
 import SportEvents from "./events/component/sport";
-import { GetServerSideProps } from "next";
-import axios from "axios";
 
-export default function Home({categories, event_type}) {
+export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -26,7 +24,7 @@ export default function Home({categories, event_type}) {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        <div className="container mx-auto ">
+        <div className="container mx-auto px-10">
           <h1 className="text-2xl font-bold py-4">Popular Events</h1>
           <AllEventsPopular />
 
@@ -39,7 +37,7 @@ export default function Home({categories, event_type}) {
               View All
             </Link>
           </div>
-          <AllEventsPage categories={categories} event_type={event_type} />
+          <AllEventsPage />
 
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold py-4">Music & Festival</h1>
@@ -80,26 +78,3 @@ export default function Home({categories, event_type}) {
     </div>
   );
 }
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const response1 = await axios.get("https://ticketapi.fly.dev/categories");
-    const response2 = await axios.get("https://ticketapi.fly.dev/event_types");
-    const categories = response1.data;
-    const event_type = response2.data;
-    return {
-      props: {
-        categories: categories,
-        event_type: event_type
-      },
-    };
-    
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        categories: null,
-        event_type: null
-      },
-    };
-  }
-};

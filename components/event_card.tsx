@@ -11,13 +11,9 @@ export default function EventCard({
   location,
   eventDate,
 }: Props) {
-  let date = eventDate.split(" ")
-  let day = date[0]
-  let month = date[1]
-  let year = date[2]
   return (
     <main>
-      <div className="shadow-lg rounded-lg min-h-[425px] w-[300px] overflow-hidden ">
+      <div className="border border-gray-300 rounded-lg shadow-sm min-h-[425px] w-[200px] overflow-hidden">
         <div className="relative h-[250px]">
           {img && 
             <img
@@ -35,16 +31,12 @@ export default function EventCard({
             </div>
           }
         </div>
-        <div className="p-4 flex">
-          <div className="flex flex-col justify-center items-center mx-3">
-            <h4 className="font-medium text-[#3D37F1]">{month}</h4>
-            <h3 className="text-3xl font-semibold">{day}</h3>
-            <h3 className="text-sm">{year}</h3>
+        <div className="p-4">
+          <div className="text-red-600 text-sm mb-1 font-semibold">
+            {eventDate}
           </div>
-          <div className="">
-            <h3 className="text-lg font-bold relative z-10">{eventName}</h3>
-            <p className="text-gray-600 text-sm ">{location}</p>
-          </div>
+          <h3 className="text-lg font-bold relative z-10">{eventName}</h3>
+          <p className="text-gray-600 text-sm ">{location}</p>
         </div>
       </div>
     </main>
