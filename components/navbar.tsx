@@ -12,14 +12,14 @@ import {
   FingerPrintIcon,
   SquaresPlusIcon,
   XMarkIcon,
-  SearchIcon,
 } from "@heroicons/react/24/outline";
-
+import SearchIcon from '@mui/icons-material/Search';
 import {
   ChevronDownIcon,
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import { IconButton, InputBase, Paper } from "@mui/material";
 
 const products = [
   {
@@ -64,6 +64,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [search, setSearch] = useState("")
   const { data: session, status } = useSession();
   const router = useRouter();
   // console.log(session)
@@ -84,6 +85,41 @@ export default function Navbar() {
             <img className="h-10 w-auto" src="/brand.svg" alt="" />
           </Link>
         </div>
+        <Paper
+          component="form"
+          sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            value={search}
+            placeholder="Event search"
+            inputProps={{ 'aria-label': 'Search for Event' }}
+            onKeyDown={(e)=>{
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                const queryParam = encodeURIComponent(search);
+                if(queryParam.length !==0){
+                  router.push(`/events?name=${queryParam}`);
+                }else{
+                  router.push(`/events?name=${null}`);
+                }
+              }
+            }}
+            onChange={(e)=>{setSearch(e.target.value)}}
+          />
+          <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={(e)=>{
+              const queryParam = encodeURIComponent(search);
+              if(queryParam.length !==0){
+                router.push(`/events?name=${queryParam}`);
+              }else{
+                router.push(`/events?name=${null}`);
+              }
+            }
+
+          }>
+            <SearchIcon />
+          </IconButton>
+        </Paper>
         <div className="flex lg:hidden">
           <button
             type="button"
