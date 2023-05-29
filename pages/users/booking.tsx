@@ -1,5 +1,5 @@
-import MenuBar from "@/components/account_menu";
 import ProfileCard from "@/components/profile_card";
+import MenuBar from "@/components/account_menu";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -75,7 +75,7 @@ export default function Booking() {
       <div className="container mx-auto px-10">
         <h1 className="text-2xl font-bold py-6">My Booking</h1>
         <div className="flex">
-          <div className="flex flex-col">
+        <div className="flex flex-col">
             <ProfileCard />
             <div className="my-4">
               <MenuBar />
@@ -99,8 +99,9 @@ export default function Booking() {
                         eventType={matchingEvent.event_type}
                         img={matchingEvent.poster}
                         eventName={matchingEvent.event_name}
-                        price={booking.total_price}
+                        totalprice={booking.total_price}
                         quantity={booking.quantity}
+                        tickets={booking.ticket} // Pass the ticket array as tickets prop
                       />
                     </div>
                   </div>
