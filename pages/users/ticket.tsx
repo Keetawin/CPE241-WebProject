@@ -112,91 +112,69 @@ export default function Tickets() {
 
             {activeTab === 1 && (
               <main className="mb-10">
-                {tickets.filter(
-                  (ticket) => new Date(ticket.ticket_date) >= new Date()
-                ).length > 0 ? (
-                  tickets.map((ticket) => {
-                    if (new Date(ticket.ticket_date) >= new Date()) {
-                      const event = events.find(
-                        (event) => event.event_id === ticket.event_id
+                {tickets
+                  .filter((ticket) => new Date(ticket.ticket_date) >= new Date())
+                  .map((ticket) => {
+                    const event = events.find((event) => event.event_id === ticket.event_id);
+                    if (event) {
+                      return (
+                        <div className="pl-10 w-full" key={event.event_id}>
+                          {!ticket.isrefund && (
+                            <ShowTicket
+                              ticketid={ticket.ticket_id}
+                              eventid={ticket.event_id}
+                              img={event.poster}
+                              seatType={ticket.seat_type}
+                              ticketDate={ticket.ticket_date}
+                              seatNo={ticket.seat_no}
+                              eventType={event.event_type}
+                              eventName={event.event_name}
+                              location={event.location}
+                              eventStart={event.event_startdate}
+                              eventEnd={event.event_enddate}
+                              refund={ticket.refundable}
+                              isrefund={ticket.isrefund}
+                            />
+                          )}
+                        </div>
                       );
-                      if (event) {
-                        console.log(event, ticket)
-                        return (
-                          <div className="pl-10 w-full" key={event.event_id}>
-                            {!ticket.isrefund && (
-                              <ShowTicket
-                                ticketid={ticket.ticket_id}
-                                eventid={ticket.event_id}
-                                img={event.poster}
-                                seatType={ticket.seat_type}
-                                ticketDate={ticket.ticket_date}
-                                seatNo={ticket.seat_no}
-                                eventType={event.event_type}
-                                eventName={event.event_name}
-                                location={event.location}
-                                eventStart={event.event_startdate}
-                                eventEnd={event.event_enddate}
-                                refund={ticket.refundable}
-                                isrefund={ticket.isrefund}
-                              />
-                            )}
-                          </div>
-                        );
-                      }
                     }
                     return null;
-                  })
-                ) : (
-                  <p style={{ marginTop: "40px", marginLeft: "30px" }}>
-                    No Active Tickets found.
-                  </p>
-                )}
+                  })}
               </main>
             )}
 
             {activeTab === 2 && (
               <main className="mb-10">
-                {tickets.filter(
-                  (ticket) => new Date(ticket.ticket_date) < new Date()
-                ).length > 0 ? (
-                  tickets.map((ticket) => {
-                    if (new Date(ticket.ticket_date) < new Date()) {
-                      const event = events.find(
-                        (event) => event.event_id === ticket.event_id
-                        );
-                        if (event) {
-                        console.log(ticket, event)
-                        return (
-                          <div className="pl-10 w-full" key={event.event_id}>
-                            {!ticket.isrefund && (
-                              <ShowTicket
-                                ticketid={ticket.ticket_id}
-                                eventid={ticket.event_id}
-                                img={event.poster}
-                                ticketDate={ticket.ticket_date}
-                                seatType={ticket.seat_type}
-                                seatNo={ticket.seat_no}
-                                eventType={event.event_type}
-                                eventName={event.event_name}
-                                location={event.location}
-                                eventStart={event.event_startdate}
-                                eventEnd={event.event_enddate}
-                                refund={ticket.refundable}
-                                isrefund={ticket.isrefund}
-                              />
-                            )}
-                          </div>
-                        );
-                      }
+                {tickets
+                  .filter((ticket) => new Date(ticket.ticket_date) < new Date())
+                  .map((ticket) => {
+                    const event = events.find((event) => event.event_id === ticket.event_id);
+                    if (event) {
+                      return (
+                        <div className="pl-10 w-full" key={event.event_id}>
+                          {!ticket.isrefund && (
+                            <ShowTicket
+                              ticketid={ticket.ticket_id}
+                              eventid={ticket.event_id}
+                              img={event.poster}
+                              ticketDate={ticket.ticket_date}
+                              seatType={ticket.seat_type}
+                              seatNo={ticket.seat_no}
+                              eventType={event.event_type}
+                              eventName={event.event_name}
+                              location={event.location}
+                              eventStart={event.event_startdate}
+                              eventEnd={event.event_enddate}
+                              refund={ticket.refundable}
+                              isrefund={ticket.isrefund}
+                            />
+                          )}
+                        </div>
+                      );
                     }
                     return null;
-                  })
-                ) : (
-                  <p style={{ marginTop: "40px", marginLeft: "30px" }}>
-                    No Active Tickets found.
-                  </p>
-                )}
+                  })}
               </main>
             )}
           </div>

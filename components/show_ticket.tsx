@@ -20,11 +20,13 @@ import dayjs from "dayjs";
 type Props = {
   ticketid: string;
   eventid: string;
+  ticketDate: string;
   img: string;
+  eventType: string;
   eventName: string;
   location: string;
-  event_startdate: string;
-  event_enddate: string;
+  eventStart: string;
+  eventEnd: string;
   refund: string;
   isrefund: string;
 };
@@ -53,7 +55,7 @@ export default function ShowTicket({
     setOpen(false);
   };
 
-  const handleRefund = (ticketid: number) => {
+  const handleRefund = (ticketid: string) => {
     axios
       .put(`https://ticketapi.fly.dev/refund_ticket/${ticketid}`)
       .then(() => {
