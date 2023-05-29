@@ -8,6 +8,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { GetServerSideProps } from "next";
 
 type Event = {
   event_id: number;
@@ -51,10 +52,11 @@ const EventDetail = ({ event }: Props) => {
         const ticketTypeData = response.data;
 
         const updatedTicketTypes = ticketTypeData.map((ticketType) => ({
+          seat_type_id: ticketType.seat_type_id,
           name: ticketType.seat_type,
           price: parseFloat(ticketType.price),
           quantity: 0,
-          remaining: ticketType.quantity_limit,
+          limit: ticketType.quantity_limit,
           sale_enddate: dayjs(ticketType.sale_enddate).format("D MMMM YYYY"), // Format the date
         }));
 
@@ -147,7 +149,7 @@ const EventDetail = ({ event }: Props) => {
   const handleIncrement = (ticketTypeIndex: number) => {
     const updatedTickets = [...selectedTickets];
     const currentQuantity = updatedTickets[ticketTypeIndex].quantity;
-    if (currentQuantity < updatedTickets[ticketTypeIndex].remaining) {
+    if (currentQuantity < updatedTickets[ticketTypeIndex].limit) {
       updatedTickets[ticketTypeIndex].quantity++;
       setSelectedTickets(updatedTickets);
     }
@@ -265,7 +267,7 @@ const EventDetail = ({ event }: Props) => {
                   Available until {ticketType.sale_enddate}
                 </div>
                 <div className="px-4 pb-4 font-medium  text-[#060047]">
-                  {ticketType.remaining} remaining
+                  Limit {ticketType.limit} 
                 </div>
               </div>
             ))}
@@ -287,9 +289,9 @@ const EventDetail = ({ event }: Props) => {
                   pathname: `/events/checkout/[id]`,
                   query: {
                     id: event.event_id,
-                    eventName: event.event_name,
+                    // eventName: event.event_name,
                     ticketType: JSON.stringify(selectedTickets),
-                    totalPrice: totalPrice,
+                    // totalPrice: totalPrice,
                   },
                 }}
                 key={event.event_id}
@@ -352,3 +354,4 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     return { notFound: true };
   }
 };
+

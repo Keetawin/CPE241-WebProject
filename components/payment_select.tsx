@@ -11,7 +11,7 @@ export default function PaymentSelect({userPayment, onChange, value, required }:
   return (
     <Select
       required={required}
-      sx={{width: "45ch"}}
+      sx={{width: "45ch", backgroundColor: "#ffffff"}}
       value={value}
       onChange={onChange}
       input={<OutlinedInput label="Tag" />}

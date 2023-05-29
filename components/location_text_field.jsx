@@ -74,7 +74,7 @@ const onMapClick = (e) => {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={20}
+        zoom={6}
         onClick={onMapClick}
         id='google-map-script'
       >

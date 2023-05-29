@@ -1,86 +1,102 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import axios from "axios";
+import { GetServerSideProps } from "next";
+import dayjs from "dayjs";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import EventSeatIcon from '@mui/icons-material/EventSeat';
+import { Alert, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, IconButton, MenuItem, Paper, Select } from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import PaymentSelect from "@/components/payment_select";
 
-const CheckoutPage = () => {
+const CheckoutPage = ({event, available_seat, userPayment}: Props) => {
   const router = useRouter();
-  const { id, eventName, ticketType } = router.query;
+  const { id, ticketType } = router.query;
+  const parsedTicketType = JSON.parse(ticketType);
+  const { data: session } = useSession();
+  let totalQuantity = 0
+  if (parsedTicketType && Array.isArray(parsedTicketType)) {
+    totalQuantity = parsedTicketType.reduce((sum, element) => sum + element.quantity, 0);
+  }
+
   const [voucherData, setVoucherData] = useState([]);
   const [voucherCode, setVoucherCode] = useState("");
-  const [voucher, setVoucher] = useState(false);
-  const [paymentOption, setPaymentOption] = useState("mastercard");
-  const [cvv, setCVV] = useState("");
-  const [promptPayNumber, setPromptPayNumber] = useState("");
-  const { data: session } = useSession();
-  const [paymentData, setPaymentData] = useState([]);
+
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [selectedPaymentInfo, setSelectedPaymentInfo] = useState(null);
+  const [ticket, setTicket] = useState([])
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("")
+  const [alert, setAlert] = useState("success")
+
+  const [billing, setBilling] = useState({subTotal: 0, refundDown: 0, grandTotal: 0, voucher: 0})
+  console.log(ticket);
 
   useEffect(() => {
-    const fetchPaymentData = async () => {
-      try {
-        const response = await axios.get(
-          `https://ticketapi.fly.dev/get_user_payment?user_id=${session?.user?.user_id}`
-        );
-        setPaymentData(response.data);
-      } catch (error) {
-        console.error("Error fetching payment data:", error);
+      if (ticketType && typeof ticketType === "string") {
+        if (Array.isArray(parsedTicketType) && ticket.length != totalQuantity) {
+          let tickets = []
+          parsedTicketType.forEach(element => {
+            for (let i = 1; i <= element.quantity; i++) {
+              tickets.push(              {
+                  ticket_date: "",
+                  refundable: false,
+                  seat_no: "",
+                  seat_type_id: element.seat_type_id
+                }
+              );
+            }
+          })
+          setTicket(tickets)
       }
-    };
+    }
+  }, []);
+  
+  useEffect(()=>{
+    let subTotal = 0
+    let refundDown = 0
+    let grandTotal = 0
+    let voucher = 0 
+    if(voucherData.voucher_is_valid){
+      voucher = parseInt(voucherData.amount)
+    }
+    ticket.forEach((t, idx)=>{
+      const ticket_info = parsedTicketType.find(type => type.seat_type_id === t.seat_type_id)
+      subTotal += parseInt(ticket_info.price)*1.07
+      if(t.refundable){
+        refundDown += parseInt(ticket_info.price)*1.07*0.3
+      }
+    })
+    grandTotal = subTotal + refundDown - voucher
+    setBilling({
+      subTotal: subTotal,
+      refundDown: refundDown,
+      grandTotal: grandTotal,
+      voucher: voucher
+    })
 
-    fetchPaymentData();
-  }, [session]);
+  }, [ticket, voucherData])
 
   const selectedTickets = ticketType ? JSON.parse(ticketType) : [];
-  const [refundableChecked, setRefundableChecked] = useState(false);
 
-  const calculateTotalPrice = () => {
-    let totalPrice = 0;
-    let tax = 0;
-    let subtotal = 0;
-    let sub = 0;
-    let grandtotal = 0;
-    selectedTickets.forEach((ticket) => {
-      totalPrice += ticket.price * ticket.quantity;
-      grandtotal += ticket.price * ticket.quantity;
-      subtotal += ticket.price * ticket.quantity;
-      tax = totalPrice * 0.3;
-      sub = (grandtotal * 7) / 100;
-    });
-    if (refundableChecked) {
-      totalPrice = grandtotal * 0;
-      grandtotal += sub;
-      subtotal += sub;
-      grandtotal += tax; // Add 30% to the total price for refundable tickets
-    } else {
-      totalPrice = grandtotal * 0.3;
-      grandtotal += sub;
-      subtotal += sub;
-    }
-    return { totalPrice, subtotal, tax, sub, grandtotal };
-  };
 
   const handlePaymentSubmit = (e) => {
     e.preventDefault();
-
-    if (paymentOption === "mastercard") {
-      if (mastercardNumber && cardname && expirationDate && cvv) {
-        alert("Mastercard payment processed successfully.");
-      } else {
-        alert("Please fill in all required fields for Mastercard payment.");
-      }
-    } else if (paymentOption === "promptpay") {
-      if (promptPayNumber) {
-        const amount = calculateTotalPrice();
-        const qrCodeContent = `promptpay:${promptPayNumber}?amount=${amount}`;
-        const qrCodeSize = 200;
-        const qrCodeImage = <QRCode value={qrCodeContent} size={qrCodeSize} />;
-        alert(qrCodeImage);
-      } else {
-        alert("Please fill in all required fields for PromptPay payment.");
-      }
+    let body = {
+      "user_id": session?.user?.user_id,
+      "payment_info_id": selectedPayment,
+      "event_id": id,
+      "quantity": ticket.length,
+      "tickets": ticket
+    }   
+    if(voucherData.voucher_is_valid){
+      body["voucher_id"] = voucherData.voucher_id
     }
+    axios.post("https://ticketapi.fly.dev/create_booking", body)
+    router.push("/users")
+    // console.log(body)
   };
 
   const handleVoucherRedeem = () => {
@@ -90,50 +106,56 @@ const CheckoutPage = () => {
           `https://ticketapi.fly.dev/validate_voucher?event_id=${id}&voucher_code=${voucherCode}`
         )
         .then((res) => {
-          setVoucherData(res.data);
-          setVoucher(true);
-        })
-        .catch((error) => {
-          setVoucherData([]);
-          setVoucher(false);
+            setVoucherData(res.data);
+            if(res.status == 200){
+                setAlert('success')
+            }
+            setAlertMessage(res.data.info)
+            setAlertOpen(true)
+          })
+          .catch((error) => {
+            // console.log(error)
+            setAlert('error')
+            setVoucherData(error.response.data);
+            setAlertMessage(error.response.data.info)
+            setAlertOpen(true)
         });
-    } else {
-      alert("Please enter a voucher code.");
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear() % 100;
-    return `${month.toString().padStart(2, "0")}/${year
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  const mastercardNumber =
-    selectedPaymentInfo && selectedPaymentInfo.card_id
-      ? selectedPaymentInfo.card_id
-          .replace(/\s/g, "")
-          .replace(/(\d{4})/g, "$1 ")
-      : "";
-  const cardname = selectedPaymentInfo ? selectedPaymentInfo.payment_name : "";
-  const expirationDate = selectedPaymentInfo
-    ? formatDate(selectedPaymentInfo.expired_date)
-    : "";
-
-  const formattedMastercardNumber = mastercardNumber
-    .replace(/(\d{4})/g, "$1 ")
-    .trim();
-
-  const formattedExpirationDate = expirationDate
-    .replace(/[^0-9]/g, "")
-    .slice(0, 4)
-    .replace(/(\d{2})(\d{2})/, "$1/$2");
 
   return (
     <div className="container mx-auto px-10">
+      <div className="flex p-5 my-5 shadow-lg rounded-lg w-full overflow-hidden ">
+        <div className="relative h-[250px]">
+          {event.poster && 
+            <img
+              className="w-full h-full object-cover object-center rounded-t-lg aspect-w-4 aspect-h-3"
+              src={event.poster}
+              alt="Placeholder"
+            />
+          }
+          {
+            !event.poster &&
+            <div className="flex w-full h-full bg-gradient-to-r from-[#b7175c] to-[#E90064] justify-center items-center text-center rounded-t-lg">
+              <h1 className="text-white font-bold text-4xl rotate-[-12deg] skew-x-12">
+                {event.event_name}
+              </h1>
+            </div>
+          }
+        </div>
+
+        <div className="p-4 flex ml-10">
+          <div className="">
+            <h5 className="text-red-500">{event.event_type}</h5>
+            <h2 className="text-4xl font-semibold mb-3">{event.event_name}</h2>
+            <h3 className="text-gray-500 text-sm font-medium mb-3">Date: {dayjs(event.event_startdate).format("DD/MM/YYYY")} - {dayjs(event.event_enddate).format("DD/MM/YYYY")}</h3>
+            <p className=" text-md mb-2"><LocationOnIcon/>Location: {event.location}</p>
+            <p className=" text-md ">{event.event_description}</p>
+          </div>
+        </div>
+      </div>
+
       <h2 className="text-2xl font-bold py-4">Ticket</h2>
       <div className="border-2 border-gray-200 p-4 bg-white shadow rounded-lg">
         <ul>
@@ -141,8 +163,8 @@ const CheckoutPage = () => {
             if (ticket.quantity !== 0) {
               return (
                 <li
-                  key={index}
-                  className="flex justify-between items-center my-2"
+                key={index}
+                className="flex justify-between items-center my-2"
                 >
                   <span className="font-semibold">{ticket.name}</span>
                   <span className="font-semibold">{ticket.price}</span>
@@ -156,70 +178,98 @@ const CheckoutPage = () => {
           })}
         </ul>
       </div>
-
-      <div className="mt-2">
-        <h2 className="text-2xl font-bold py-4">Choose Refundable Tickets</h2>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            className="form-checkbox"
-            checked={refundableChecked}
-            onChange={() => setRefundableChecked(!refundableChecked)}
-          />
-          <span className="text-xl font-semibold ml-2">Refundable Tickets</span>
-        </label>
-        <span className="text-xl font-semibold ml-8">
-          {calculateTotalPrice().tax}
-        </span>
-        <p className="mt-2 ml-8 mr-52">
-          Lorem ipsum dolor sit amet consectetur. Libero malesuada elit in arcu
-          placerat. Elementum suspendisse pellentesque sed sit id vitae
-          consequat. Quis turpis
-        </p>
-      </div>
-
+      <h2 className="text-2xl font-bold py-4">Ticket Information</h2>
+      {
+        ticket && ticket.map((t, idx)=>{
+          return (
+              <Paper elevation={2}  sx={{width: "full", padding: "2rem", margin: "1rem 0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <div className="flex">
+                  <div className="bg-[#E90064] w-8 h-8 flex justify-center items-center rounded-lg text-white font-semibold text-lg mr-2">{idx+1}</div> 
+                  <h2 className="text-xl font-semibold">
+                    {parsedTicketType.find(type => type.seat_type_id === t.seat_type_id).name}
+                  </h2>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-col mr-4 ">
+                    <label htmlFor="">Seat NO.</label> 
+                    <FormControl sx={{ width: 240 }}>
+                      <Select
+                        value={ticket[idx].seat_no}
+                        autoWidth={false}
+                        // error={missing.includes("Gender")}
+                        onChange={(e)=>{
+                          setTicket(prevList => {
+                              const updatedList = [...prevList]
+                              updatedList[idx] = {
+                                ...updatedList[idx],
+                                "seat_no": e.target.value, // Update the desired property
+                              };
+                              return updatedList;
+                            })
+                          }
+                        }
+                        >
+                          {
+                            available_seat[t.seat_type_id].map((seat: string)=>{
+                              return <MenuItem value={seat}>{seat}</MenuItem>
+                            })
+                          }
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div className="flex flex-col mr-4">
+                    <label htmlFor="">Event Date</label>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker 
+                        value={dayjs(ticket[idx].ticket_date)}
+                        minDate={dayjs(event.event_startdate).subtract(1, 'day')}
+                        maxDate={dayjs(event.event_enddate).subtract(1, 'day')}
+                        // error={missing.includes("Date of Birth")}
+                        onChange={(e)=>{
+                          setTicket(prevList => {
+                              const updatedList = [...prevList]
+                              updatedList[idx] = {
+                                ...updatedList[idx],
+                                "ticket_date": dayjs(e.$d).format("YYYY-MM-DD"), // Update the desired property
+                              };
+                              return updatedList;
+                            })
+                        }}
+                        sx={{width: "25ch"}} 
+                      />
+                    </LocalizationProvider>
+                  </div>
+                  <div>
+                    <FormControlLabel 
+                      control={
+                        <Checkbox 
+                        checked={ticket[idx].refundable} 
+                        onChange={(e)=>{
+                          // console.log(e.target.checked)
+                            setTicket(prevList => {
+                                const updatedList = [...prevList]
+                                updatedList[idx] = {
+                                  ...updatedList[idx],
+                                  "refundable": e.target.checked, // Update the desired property
+                                };
+                                return updatedList;
+                              })
+                          }
+                        }
+                        />
+                      }
+                      label="Refundable" 
+                    />
+                    <label htmlFor="" className="text-lg font-medium">{parsedTicketType.find(type => type.seat_type_id === t.seat_type_id).price*0.3} Bath</label>
+                  </div>
+                </div>
+              </Paper>
+          )
+        })
+      }
+      
       <h2 className="text-2xl font-bold py-4">Voucher</h2>
       <div className="border-2 border-gray-200 p-4 bg-white shadow rounded-lg">
-        {voucher ? (
-          <>
-            {voucherData.length > 0 ? (
-              <>
-                <p>Voucher Details:</p>
-                {voucherData.map((voucher) => (
-                  <div key={voucher.voucher_id}>
-                    <p>Voucher Code: {voucher.voucher_code}</p>
-                    <p>Expire Date: {voucher.expire_date}</p>
-                    <p>Amount: {voucher.amount}</p>
-                    {/* Render other voucher details as needed */}
-                  </div>
-                ))}
-              </>
-            ) : (
-              <>
-                <p className="mt-2 ml-4">Voucher Code:</p>
-                <div className="flex items-center mb-2">
-                  <input
-                    type="text"
-                    value={voucherCode}
-                    onChange={(e) => setVoucherCode(e.target.value)}
-                    className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 ml-4 rounded-md"
-                    placeholder="Add voucher"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleVoucherRedeem}
-                    className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-small py-0.5 px-5 ml-4 rounded-full"
-                  >
-                    Add
-                  </button>
-                </div>
-
-                <p>No voucher details available</p>
-              </>
-            )}
-          </>
-        ) : (
-          <>
             <p className="mt-2 ml-4">Voucher Code:</p>
             <div className="flex items-center mb-2">
               <input
@@ -237,8 +287,26 @@ const CheckoutPage = () => {
                 Add
               </button>
             </div>
-          </>
-        )}
+            <Collapse in={alertOpen}>
+              <Alert
+              severity={alert}
+              action={
+                  <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                      setAlertOpen(false);
+                  }}
+                  >
+                      x
+                  </IconButton>
+              }
+              sx={{ mb: 2 }}
+              >
+                  {alertMessage}
+              </Alert>
+            </Collapse>
       </div>
 
       <div className="mt-8">
@@ -247,96 +315,15 @@ const CheckoutPage = () => {
           Credit card / Debit Card
         </h2>
         <h1 className="ml-4 mt-2">Existing Card</h1>
-        <select
-          value={paymentOption}
-          onChange={(e) => {
-            const selectedPaymentInfo = paymentData.find(
-              (payment) => payment.payment_name === e.target.value
-            );
-            setSelectedPaymentInfo(selectedPaymentInfo);
-          }}
-          className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 ml-4 rounded-md w-60"
-        >
-          <option value="mastercard">Credit Card / Debit Card</option>
-          {paymentData
-            .filter((payment) => payment.payment_method === "Credit Card")
-            .map((payment) => (
-              <option
-                key={payment.payment_info_id}
-                value={payment.payment_name}
-              >
-                {payment.card_id}
-              </option>
-            ))}
-        </select>
-        <div>
-          <div className="mt-4 ml-4">
-            <label>Card Number</label>
-            <div>
-              <input
-                type="text"
-                value={mastercardNumber}
-                onChange={(e) =>
-                  setSelectedPaymentInfo({
-                    ...selectedPaymentInfo,
-                    card_id: e.target.value.replace(/\s/g, ""),
-                  })
-                }
-                maxLength={19}
-                placeholder="0000 0000 0000 0000"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-60"
-              />
-            </div>
-          </div>
-          <div className="mt-4 ml-4">
-            <label>Card Name</label>
-            <div>
-              <input
-                type="text"
-                value={cardname}
-                onChange={(e) =>
-                  setSelectedPaymentInfo({
-                    ...selectedPaymentInfo,
-                    payment_name: e.target.value,
-                  })
-                }
-                placeholder="Card Name"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-60"
-              />
-            </div>
-          </div>
-          <div className="mt-4 ml-4">
-            <label>Expire Date</label>
-
-            <div>
-              <input
-                type="text"
-                value={expirationDate}
-                onChange={(e) =>
-                  setSelectedPaymentInfo({
-                    ...selectedPaymentInfo,
-                    expired_date: e.target.value,
-                  })
-                }
-                maxLength={5}
-                placeholder="MM/YY"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-36"
-              />
-
-              <div className="flex flex-col mt-2">
-                <label>CVV</label>
-                <input
-                  type="text"
-                  value={cvv}
-                  onChange={(e) => setCVV(e.target.value)}
-                  maxLength={3}
-                  className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-20"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <PaymentSelect 
+          userPayment={userPayment}
+          required={true}
+          value={selectedPayment}
+          onChange={(e)=>{setSelectedPayment(e.target.value) }}
+        />
       </div>
+      <Button onClick={()=>{router.push("/users/payment/add")}} variant="contained" color="primary" style={{ backgroundColor: '#E90064', marginTop: "2rem" }}>Add New Payment</Button>
+
       <div className="mt-8">
         <h2 className="text-2xl font-bold py-4">Review Order Summary</h2>
         <div className="mt-2">
@@ -376,33 +363,72 @@ const CheckoutPage = () => {
             <div className="flex justify-end">
               <span className="font-semibold">Subtotal</span>
               <span className="font-semibold ml-2">
-                {calculateTotalPrice().subtotal}
+                {billing.subTotal}
+              </span>
+            </div>
+            <div className="flex justify-end">
+              <span className="font-semibold">Voucher</span>
+              <span className="font-semibold ml-2">
+                {billing.voucher}
               </span>
             </div>
             <div className="flex justify-end">
               <span className="font-semibold">Refundable Tickets</span>
               <span className="font-semibold ml-2">
-                {calculateTotalPrice().tax - calculateTotalPrice().totalPrice}
+                {billing.refundDown}
               </span>
             </div>
             <div className="flex justify-end">
               <span className="text-2xl font-semibold">Grand Total</span>
               <span className="text-red-600 text-xl font-semibold ml-2">
-                {calculateTotalPrice().grandtotal}
+                {billing.grandTotal}
               </span>
             </div>
           </div>
         </div>
       </div>
-
-      <button
+      <Button
+        disabled={
+          !ticket.every(ticket => ticket.ticket_date !== '' && ticket.seat_no !== '') ||
+          selectedPayment == null 
+        }
         onClick={handlePaymentSubmit}
-        className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-1 px-6 rounded-full mt-6 mb-4 ml-auto"
+        className="bg-[#E90064] hover:bg-[#c60056e6] text-white px-6 mt-6 mb-20 ml-[90%] "
       >
         Confirm
-      </button>
+      </Button>
     </div>
   );
 };
-
 export default CheckoutPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  const user_id = session?.user?.user_id;
+  // const router = useRouter(context)
+  const {id} = context.query
+  try {
+    const response1 = await axios.get(`https://ticketapi.fly.dev/get_event?event_id=${id}`);
+    const response2 = await axios.get(`https://ticketapi.fly.dev/get_available_seat?event_id=${id}`);
+    const response3 = await axios.get( `https://ticketapi.fly.dev/get_user_payment?user_id=${user_id}`);
+
+    const event = response1.data[0];
+    const available_seat = response2.data.available_seat;
+    const userPayment = response3.data
+    return {
+      props: {
+        event: event,
+        available_seat: available_seat,
+        userPayment: userPayment
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        event: null,
+        available_seat: null,
+        userPayment: null
+      },
+    };
+  }
+};
