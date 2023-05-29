@@ -33,7 +33,7 @@ export default function Booking() {
     console.log(session.data?.user?.user_id);
     axios
       .get<Booking[]>(
-        `https://ticketapi.fly.dev/user_booking?user_id='${session.data?.user?.user_id}'`
+        `https://ticketapi.fly.dev/user_booking?user_id=${session.data?.user?.user_id}`
       )
       .then((response) => {
         setLoading(false);
@@ -75,7 +75,7 @@ export default function Booking() {
       <div className="container mx-auto px-10">
         <h1 className="text-2xl font-bold py-6">My Booking</h1>
         <div className="flex">
-        <div className="flex flex-col">
+          <div className="flex flex-col">
             <ProfileCard />
             <div className="my-4">
               <MenuBar />
@@ -83,25 +83,25 @@ export default function Booking() {
           </div>
           <div className="w-full mb-10">
             <div className="w-full">
-              {booking.map((booking) => {
+              {booking.map((bookingItem, index) => {
                 const matchingEvent = events.find(
-                  (event) => event.event_id === booking.event_id
+                  (event) => event.event_id === bookingItem.event_id
                 );
                 if (!matchingEvent) {
                   return null; // Skip rendering if no matching event is found
                 }
-                console.log(booking, matchingEvent)
+                console.log(bookingItem, matchingEvent);
                 return (
-                  <div key={booking.booking_id} >
+                  <div key={`${bookingItem.booking_id}-${index}`}>
                     <div className="pl-10 w-full">
                       <ShowBooking
-                        bookingid={booking.booking_id}
+                        bookingid={bookingItem.booking_id}
                         eventType={matchingEvent.event_type}
                         img={matchingEvent.poster}
                         eventName={matchingEvent.event_name}
-                        totalprice={booking.total_price}
-                        quantity={booking.quantity}
-                        tickets={booking.ticket} // Pass the ticket array as tickets prop
+                        totalprice={bookingItem.total_price}
+                        quantity={bookingItem.quantity}
+                        tickets={bookingItem.ticket} // Pass the ticket array as tickets prop
                       />
                     </div>
                   </div>

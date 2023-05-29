@@ -566,8 +566,6 @@ export default function EventDashBoard() {
                           return (
                             <p key={event.event_id}>{event.total_sale} ฿</p>
                           );
-                        } else {
-                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
@@ -588,8 +586,6 @@ export default function EventDashBoard() {
                           return (
                             <p key={event.event_id}>{event.total_refund} ฿</p>
                           );
-                        } else {
-                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
@@ -612,8 +608,6 @@ export default function EventDashBoard() {
                           return (
                             <p key={event.event_id}>{calculatedValue} ฿</p>
                           );
-                        } else {
-                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
