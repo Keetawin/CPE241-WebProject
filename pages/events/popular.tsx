@@ -24,7 +24,7 @@ export default function AllEventsPopular() {
         const sortedEvents = response.data.sort(
           (a, b) => b.follower - a.follower
         );
-        const topEvents = sortedEvents.slice(0, 6); // Select the top 6 events with the most followers
+        const topEvents = sortedEvents.slice(0, 4); // Select the top 6 events with the most followers
         setEvents(topEvents);
         setLoading(false);
         console.log(response);

@@ -28,7 +28,7 @@ export default function EducationEvents() {
         const sortedEvents = filteredEvents.sort(
           (a, b) => b.follower - a.follower
         );
-        const topEvents = sortedEvents.slice(0, 6);
+        const topEvents = sortedEvents.slice(0, 4);
         setEvents(topEvents);
         setLoading(false);
       })

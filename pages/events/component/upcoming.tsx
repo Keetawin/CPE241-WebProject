@@ -10,6 +10,7 @@ type Event = {
   event_startdate: string;
   location: string;
   poster: string;
+  popularity: number; // Add popularity property to the Event type
 };
 
 export default function EventsUpcoming() {
@@ -20,10 +21,11 @@ export default function EventsUpcoming() {
     axios
       .get<Event[]>("https://ticketapi.fly.dev/get_event")
       .then((response) => {
-        const sortedEvents = response.data.sort((a, b) =>
-          dayjs(b.event_startdate).diff(a.event_startdate)
+        const sortedEvents = response.data.sort(
+          (a, b) => b.popularity - a.popularity // Sort events based on popularity
         );
-        setEvents(sortedEvents);
+        const popularEvents = sortedEvents.slice(0, 4); // Get the first 4 events (most popular)
+        setEvents(popularEvents);
         setLoading(false);
         console.log(response);
       })
