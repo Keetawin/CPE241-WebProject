@@ -156,19 +156,23 @@ export default function Dashboard() {
   let totalRefund = 0;
 
   eventData2.forEach((event) => {
-    if (event.event_id) {
-      const sale = parseInt(event.total_sale);
-      if (!isNaN(sale)) {
-        totalSale += sale;
+    if (parseInt(event.organize_id) == parseInt(id)) {
+      if (event.event_id) {
+        const sale = parseInt(event.total_sale);
+        if (!isNaN(sale)) {
+          totalSale += sale;
+        }
       }
     }
   });
 
   eventData2.forEach((event) => {
-    if (event.event_id) {
-      const refud = parseInt(event.total_refund);
-      if (!isNaN(refud)) {
-        totalRefund += refud;
+    if (parseInt(event.organize_id) == parseInt(id)) {
+      if (event.event_id) {
+        const refud = parseInt(event.total_refund);
+        if (!isNaN(refud)) {
+          totalRefund += refud;
+        }
       }
     }
   });
@@ -230,6 +234,37 @@ export default function Dashboard() {
     },
   };
 
+  const totalSalesChartData = {
+    labels: top5Events
+      .filter((event) => parseInt(event.organize_id) === parseInt(id))
+      .map((event) => event.event_name),
+    datasets: [
+      {
+        label: "Total Sale",
+        data: top5Events
+          .filter((event) => parseInt(event.organize_id) === parseInt(id))
+          .map((event) => event.total_sale),
+        backgroundColor: "rgba(75, 192, 192, 0.6)", // Customize the bar color
+      },
+    ],
+  };
+
+  // Prepare data and labels for the bar chart of number of followers
+  const followersChartData = {
+    labels: top5Events1
+      .filter((event) => parseInt(event.organize_id) === parseInt(id))
+      .map((event) => event.event_name),
+    datasets: [
+      {
+        label: "Number of Followers",
+        data: top5Events1
+          .filter((event) => parseInt(event.organize_id) === parseInt(id))
+          .map((event) => parseInt(event.follower)),
+        backgroundColor: "rgba(75, 192, 192, 0.6)", // Customize the bar color
+      },
+    ],
+  };
+
   return (
     <div className="container mx-auto px-10">
       <h1 className="text-3xl font-bold py-6">All Event Dashboard</h1>
@@ -270,13 +305,13 @@ export default function Dashboard() {
       <div className="pt-4">
         <h2 className=" text-lg py-2 px-2 font-semibold">Top 5 Sale Popular</h2>
         <div>
-          <Bar height={100} data={chartData} options={chartOptions} />
+          <Bar height={100} data={totalSalesChartData} options={chartOptions} />
         </div>
         <div>
           <h2 className=" text-lg py-2 px-2 font-semibold">
             Top 5 Events by Number of Followers
           </h2>
-          <Bar height={100} data={chartData1} options={chartOptions1} />
+          <Bar height={100} data={followersChartData} options={chartOptions1} />
         </div>
       </div>
 

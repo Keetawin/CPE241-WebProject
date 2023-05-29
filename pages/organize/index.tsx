@@ -8,15 +8,24 @@ import organize from "./organize_mock"; // Replace with your actual event data
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
-import { Alert, Checkbox, Collapse, IconButton, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
+import {
+  Alert,
+  Checkbox,
+  Collapse,
+  IconButton,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  TextField,
+} from "@mui/material";
 import PaymentSelect from "@/components/payment_select";
 
 export default function Organize({ userOrganize, userPayment }) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("")
-  const [alert, setAlert] = useState("success")
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState("success");
   const [organizeData, setOrganizeData] = useState({
     name: "",
     telephone: "",
@@ -25,7 +34,8 @@ export default function Organize({ userOrganize, userPayment }) {
   });
   const censorValue = (value: string) => {
     const visibleDigits = 4; // Number of visible digits at the end
-    const maskedValue = '*'.repeat(value.length - visibleDigits) + value.slice(-visibleDigits);
+    const maskedValue =
+      "*".repeat(value.length - visibleDigits) + value.slice(-visibleDigits);
     return maskedValue;
   };
   function closeModal() {
@@ -51,23 +61,22 @@ export default function Organize({ userOrganize, userPayment }) {
       name: name,
       tel: telephone,
       website: website,
-      payment_info_id: payment_info_id
+      payment_info_id: payment_info_id,
     };
 
     try {
-      const response = await axios.post(
-        "https://ticketapi.fly.dev/create_organize",
-        organizeDataPayload
-      ).then((res)=>{
-        if(res.status == 200){
-            setAlert('success')
-        }
-        if(res.status == 201){
-            setAlert('error')
-        }
-        setAlertMessage(res.data)
-        setAlertOpen(true)
-      })
+      const response = await axios
+        .post("https://ticketapi.fly.dev/create_organize", organizeDataPayload)
+        .then((res) => {
+          if (res.status == 200) {
+            setAlert("success");
+          }
+          if (res.status == 201) {
+            setAlert("error");
+          }
+          setAlertMessage(res.data);
+          setAlertOpen(true);
+        });
       // closeModal();
       // Handle success response here
       console.log(response);
@@ -99,7 +108,7 @@ export default function Organize({ userOrganize, userPayment }) {
                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-[#060047]">
                   {event.name}
                 </h5>
-                <p className="text-gray-500"></p>
+                <p className="text-gray-500">Organization</p>
               </Link>
             ))}
             <button
@@ -154,15 +163,15 @@ export default function Organize({ userOrganize, userPayment }) {
                               >
                                 Organize Name
                               </label>
-                              <TextField 
+                              <TextField
                                 id="name"
                                 name="name"
                                 value={organizeData.name}
                                 type="text"
                                 required
                                 onChange={handleInputChange}
-                                sx={{width: "40ch"}}
-                                variant="outlined" 
+                                sx={{ width: "40ch" }}
+                                variant="outlined"
                               />
                             </div>
 
@@ -173,14 +182,14 @@ export default function Organize({ userOrganize, userPayment }) {
                               >
                                 Telephone
                               </label>
-                              <TextField 
+                              <TextField
                                 id="telephone"
                                 name="telephone"
                                 value={organizeData.telephone}
                                 type="text"
                                 onChange={handleInputChange}
-                                sx={{width: "40ch"}}
-                                variant="outlined" 
+                                sx={{ width: "40ch" }}
+                                variant="outlined"
                               />
                             </div>
                             <div className="mb-4">
@@ -190,46 +199,51 @@ export default function Organize({ userOrganize, userPayment }) {
                               >
                                 Website
                               </label>
-                              <TextField 
+                              <TextField
                                 id="website"
                                 name="website"
                                 value={organizeData.website}
                                 type="text"
                                 onChange={handleInputChange}
-                                sx={{width: "40ch"}}
-                                variant="outlined" 
+                                sx={{ width: "40ch" }}
+                                variant="outlined"
                               />
                             </div>
-                            <label 
+                            <label
                               htmlFor="website"
                               className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
                             >
                               Payment Method
                             </label>
-                            <PaymentSelect 
-                            userPayment={userPayment}
-                            required={true}
-                            value={organizeData.payment_info_id}
-                            onChange={(e: { target: { value: string; }; })=>{setOrganizeData((prevData) => ({ ...prevData, ["payment_info_id"]: e.target.value, }))}}
+                            <PaymentSelect
+                              userPayment={userPayment}
+                              required={true}
+                              value={organizeData.payment_info_id}
+                              onChange={(e: { target: { value: string } }) => {
+                                setOrganizeData((prevData) => ({
+                                  ...prevData,
+                                  ["payment_info_id"]: e.target.value,
+                                }));
+                              }}
                             />
                             <Collapse in={alertOpen}>
                               <Alert
-                              severity={alert}
-                              action={
+                                severity={alert}
+                                action={
                                   <IconButton
-                                  aria-label="close"
-                                  color="inherit"
-                                  size="small"
-                                  onClick={() => {
+                                    aria-label="close"
+                                    color="inherit"
+                                    size="small"
+                                    onClick={() => {
                                       setAlertOpen(false);
-                                  }}
+                                    }}
                                   >
-                                      x
+                                    x
                                   </IconButton>
-                              }
-                              sx={{ mb: 2 }}
+                                }
+                                sx={{ mb: 2 }}
                               >
-                                  {alertMessage}
+                                {alertMessage}
                               </Alert>
                             </Collapse>
                             <div className="mt-6 ">
@@ -237,14 +251,14 @@ export default function Organize({ userOrganize, userPayment }) {
                                 type="button"
                                 className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
                                   !organizeData.name ||
-                                  !organizeData.payment_info_id 
+                                  !organizeData.payment_info_id
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : "bg-[#060047] hover:bg-[#E90064]"
                                 }`}
                                 onClick={handleCreateOrganize}
                                 disabled={
                                   !organizeData.name ||
-                                  !organizeData.payment_info_id 
+                                  !organizeData.payment_info_id
                                 }
                               >
                                 Create Organize
@@ -277,13 +291,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const response2 = await axios.get(
       `https://ticketapi.fly.dev/get_user_payment?user_id=${user_id}`
     );
-    const userOrganize = response1.data
-    const userPayment = response2.data
+    const userOrganize = response1.data;
+    const userPayment = response2.data;
 
     return {
       props: {
         userOrganize,
-        userPayment
+        userPayment,
       },
     };
   } catch (error) {
@@ -292,7 +306,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         userOrganize: null, // or handle error case as desired
-        userPayment: null
+        userPayment: null,
       },
     };
   }

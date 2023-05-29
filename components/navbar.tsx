@@ -142,11 +142,19 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <div className="flex  mr-10 justify-center align-middle mt-2">
-            <Link href="/organize">
-              <span className=" font-semibold text-xl text-white">
-                Organize
-              </span>
-            </Link>
+            {session && session?.user?.user_role === "User" && (
+              <Link href="/organize">
+                <span className="font-semibold text-xl text-white">
+                  Organize
+                </span>
+              </Link>
+            )}
+
+            {session && session?.user?.user_role === "Admin" && (
+              <Link href="/admin">
+                <span className="font-semibold text-xl text-white">Admin</span>
+              </Link>
+            )}
           </div>
           {!session && (
             <Link
