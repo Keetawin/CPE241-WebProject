@@ -16,6 +16,7 @@ type Props = {
   bookingid: string;
   img: string;
   eventName: string;
+  eventType: string;
   totalprice: string;
   quantity: string;
   tickets: Ticket[]; // Add tickets prop
@@ -38,15 +39,11 @@ export default function booking({
   bookingid,
   img,
   eventName,
+  eventType,
   totalprice,
   quantity,
-<<<<<<< HEAD
-  eventType
-}) {
-=======
   tickets, // Add tickets prop
 }): JSX.Element {
->>>>>>> b536ee839999b3e1c21da34cbac5a975c493b0c6
   const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
   const session = useSession();
@@ -69,17 +66,11 @@ export default function booking({
                 alt="Your Image Alt Text"
               />
             </div>
-<<<<<<< HEAD
             <div className="px-4 py-8  flex flex-col ml-8">
               <h5 className="text-md font-light">Order #{bookingid}</h5>
               <h2 className="text-md text-[#E90064] text-md">{eventType}</h2>
               <h3 className="font-semibold text-2xl">{eventName}</h3>
-              <p className="font-medium text-sm">Price: {price}</p>
-=======
-            <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
-              <p>{eventName}</p>
-              <p className="font-medium text-sm">Total Price: {totalprice}</p>
->>>>>>> b536ee839999b3e1c21da34cbac5a975c493b0c6
+              <p className="font-medium text-sm">Price: {totalprice}</p>
               <p className="font-medium text-sm">Quantity : {quantity}</p>
             </div>
             <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
