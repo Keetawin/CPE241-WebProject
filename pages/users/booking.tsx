@@ -15,6 +15,7 @@ type Booking = {
 };
 
 type Event = {
+  event_id: string;
   event_name: string;
   event_startdate: string;
   event_enddate: string;
@@ -25,13 +26,13 @@ type Event = {
 export default function Booking() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [booking, setBooking] = useState<Booking[]>([]);
   const session = useSession();
 
   useEffect(() => {
     console.log(session.data?.user?.user_id);
     axios
-      .get<Ticket[]>(
+      .get<Booking[]>(
         `https://ticketapi.fly.dev/user_booking?user_id='${session.data?.user?.user_id}'`
       )
       .then((response) => {
@@ -39,7 +40,7 @@ export default function Booking() {
         console.log(response.data);
 
         // Extract the event IDs from the tickets
-        const eventIds = response.data.map((ticket) => ticket.event_id);
+        const eventIds = response.data.map((booking) => booking.event_id);
 
         // Retrieve event details for each event ID
         eventIds.forEach((eventId) => {
@@ -58,7 +59,7 @@ export default function Booking() {
             .catch((error) => console.error(error));
         });
 
-        setTickets(response.data); // Set the tickets received from the API
+        setBooking(response.data); // Set the tickets received from the API
       })
       .catch((error) => console.error(error));
   }, [session]);
@@ -72,7 +73,7 @@ export default function Booking() {
   return (
     <main>
       <div className="container mx-auto px-10">
-        <h1 className="text-2xl font-bold py-6">My Tickets</h1>
+        <h1 className="text-2xl font-bold py-6">My Booking</h1>
         <div className="flex">
           <div className="flex flex-col">
             <ProfileCard />
@@ -81,41 +82,29 @@ export default function Booking() {
             </div>
           </div>
           <div>
-            <main>
-              {tickets.filter(
-                (ticket) => new Date(ticket.ticket_date) >= new Date()
-              ).length > 0 ? (
-                tickets.map((ticket) => {
-                  if (new Date(ticket.ticket_date) >= new Date()) {
-                    const event = events.find(
-                      (event) => event.event_id === ticket.event_id
-                    );
-                    if (event) {
-                      return (
-                        <div className="pl-10 w-full" key={event.event_id}>
-                          {!ticket.isrefund && (
-                            <ShowBooking
-                              ticketid={ticket.ticket_id}
-                              eventid={ticket.event_id}
-                              img={event.poster}
-                              eventName={event.event_name}
-                              location={event.location}
-                              eventStart={formatDate(event.event_startdate)}
-                              eventEnd={formatDate(event.event_enddate)}
-                              refund={ticket.refundable}
-                              isrefund={ticket.isrefund}
-                            />
-                          )}
-                        </div>
-                      );
-                    }
-                  }
-                  return null;
-                })
-              ) : (
-                <p></p>
-              )}
-            </main>
+            <div>
+              {booking.map((booking) => {
+                const matchingEvent = events.find(
+                  (event) => event.event_id === booking.event_id
+                );
+                if (!matchingEvent) {
+                  return null; // Skip rendering if no matching event is found
+                }
+                return (
+                  <div key={booking.booking_id}>
+                    <div className="pl-10 w-full">
+                      <ShowBooking
+                        bookingid={booking.booking_id}
+                        img={matchingEvent.poster}
+                        eventName={matchingEvent.event_name}
+                        price={booking.total_price}
+                        quantity={booking.quantity}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

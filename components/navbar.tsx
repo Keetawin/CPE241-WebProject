@@ -249,6 +249,19 @@ export default function Navbar() {
             // </Link>
           )}
         </div>
+
+        {session && (
+          <div className="flex lg:flex lg:justify-end">
+            <div className="flex items-center justify-center mt-2">
+              <Link href="/users/booking">
+                <Button
+                  startIcon={<ShoppingCartIcon style={{ fontSize: 30 }} />}
+                  style={{ color: "#FFFFFF", marginLeft: "30px" }}
+                />
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
       <Dialog
         as="div"
