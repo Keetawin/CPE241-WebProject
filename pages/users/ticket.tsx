@@ -1,10 +1,11 @@
 import MenuBar from "@/components/account_menu";
 import ProfileCard from "@/components/profile_card";
-import Test from "@/components/test";
+import Test from "@/components/show_ticket";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
+import ShowTicket from "@/components/show_ticket";
 
 type Ticket = {
   ticket_id: string;
@@ -13,6 +14,7 @@ type Ticket = {
   seat_no: string;
   ticket_date: string;
   refundable: string;
+  isrefund: string;
 };
 
 type Event = {
@@ -117,16 +119,19 @@ export default function Tickets() {
                       if (event) {
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
-                            <Test
-                              ticketid={ticket.ticket_id}
-                              eventid={ticket.event_id}
-                              img={event.poster}
-                              eventName={event.event_name}
-                              location={event.location}
-                              eventStart={formatDate(event.event_startdate)}
-                              eventEnd={formatDate(event.event_enddate)}
-                              refund={ticket.refundable}
-                            />
+                            {!ticket.isrefund && (
+                              <ShowTicket
+                                ticketid={ticket.ticket_id}
+                                eventid={ticket.event_id}
+                                img={event.poster}
+                                eventName={event.event_name}
+                                location={event.location}
+                                eventStart={formatDate(event.event_startdate)}
+                                eventEnd={formatDate(event.event_enddate)}
+                                refund={ticket.refundable}
+                                isrefund={ticket.isrefund}
+                              />
+                            )}
                           </div>
                         );
                       }
@@ -148,16 +153,20 @@ export default function Tickets() {
                       if (event) {
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
-                            <Test
-                              ticketid={ticket.ticket_id}
-                              eventid={ticket.event_id}
-                              img={event.poster}
-                              eventName={event.event_name}
-                              location={event.location}
-                              eventStart={formatDate(event.event_startdate)}
-                              eventEnd={formatDate(event.event_enddate)}
-                              refund={ticket.refundable}
-                            />
+                            {!ticket.isrefund && (
+                              <ShowTicket
+                                ticketid={ticket.ticket_id}
+                                eventid={ticket.event_id}
+                                img={event.poster}
+                                eventName={event.event_name}
+                                location={event.location}
+                                eventStart={formatDate(event.event_startdate)}
+                                eventEnd={formatDate(event.event_enddate)}
+                                refund={ticket.refundable}
+                                isrefund={ticket.isrefund}
+                              />
+                            )}
+                            
                           </div>
                         );
                       }
