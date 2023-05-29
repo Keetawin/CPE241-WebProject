@@ -567,7 +567,7 @@ export default function EventDashBoard() {
                             <p key={event.event_id}>{event.total_sale} ฿</p>
                           );
                         } else {
-                          return null;
+                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
@@ -589,7 +589,7 @@ export default function EventDashBoard() {
                             <p key={event.event_id}>{event.total_refund} ฿</p>
                           );
                         } else {
-                          return null;
+                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
@@ -613,7 +613,7 @@ export default function EventDashBoard() {
                             <p key={event.event_id}>{calculatedValue} ฿</p>
                           );
                         } else {
-                          return null;
+                          return <div>0 ฿</div>;
                         }
                       })}
                     </div>
@@ -626,7 +626,9 @@ export default function EventDashBoard() {
               <div className="w-full flex h-48 rounded-lg border-[1.5px] ">
                 <div className="flex justify-center px-4 flex-col gap-6 ">
                   <p className=" text-lg font-semibold">Total Followed</p>
-                  <p className=" font-medium text-lg">{numberOfFollowers}</p>
+                  <p className=" font-medium text-lg">
+                    {numberOfFollowers} Follwer
+                  </p>
                 </div>
                 <div className="flex  px-4 flex-col py-8"></div>
               </div>
@@ -635,27 +637,39 @@ export default function EventDashBoard() {
                 <div className="flex justify-center px-4 flex-col gap-6 ">
                   <p className=" text-lg font-semibold">Sex</p>
                 </div>
-                <div className="flex justify-center w-full">
-                  <Pie
-                    className="w-20 h-20 py-2"
-                    data={chartData2}
-                    options={chartOptions2}
-                  />
-                </div>
+
+                {getTable.length > 0 ? (
+                  <div className="flex justify-center w-full">
+                    <Pie
+                      className="w-20 h-20 py-2"
+                      data={chartData2}
+                      options={chartOptions2}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex justify-center px-4 flex-col gap-6 ">
+                    0 Sale
+                  </div>
+                )}
               </div>
 
               <div className="w-full flex h-48 rounded-lg border-[1.5px] ">
                 <div className="flex justify-center px-4 flex-col gap-6 ">
                   <p className=" text-lg font-semibold">Age</p>
                 </div>
-
-                <div className="flex justify-center w-full">
-                  <Pie
-                    className="w-20 h-20 py-2"
-                    data={chartData}
-                    options={chartOptions}
-                  />
-                </div>
+                {getTable.length > 0 ? (
+                  <div className="flex justify-center w-full">
+                    <Pie
+                      className="w-20 h-20 py-2"
+                      data={chartData}
+                      options={chartOptions}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex justify-center px-4 flex-col gap-6 ">
+                    0 Sale
+                  </div>
+                )}
               </div>
             </div>
             <div>

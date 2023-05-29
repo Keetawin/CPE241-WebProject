@@ -54,7 +54,7 @@ const EventDetail = ({ event }: Props) => {
           name: ticketType.seat_type,
           price: parseFloat(ticketType.price),
           quantity: 0,
-          remaining: ticketType.quantity_limit,
+
           sale_enddate: dayjs(ticketType.sale_enddate).format("D MMMM YYYY"), // Format the date
         }));
 
@@ -233,42 +233,46 @@ const EventDetail = ({ event }: Props) => {
         <h1 className=" text-3xl font-bold text-[#060047]">Tickets</h1>
         <div className="flex gap-8 px-2 py-4">
           <div className=" basis-2/3 flex flex-col gap-4">
-            {selectedTickets.map((ticketType, index) => (
-              <div
-                className=" w-full border-[1.5px] border-slate-300 rounded"
-                key={index}
-              >
-                <div className="flex justify-between pt-4 px-4">
-                  <h2 className=" font-semibold text-xl">{ticketType.name}</h2>
-                  <div className="flex gap-4 items-center">
-                    <p className=" font-semibold text-xl">
-                      ฿{ticketType.price}
-                    </p>
-                    <button
-                      className="w-8 h-8 bg-[#060047] text-white font-semibold text-xl"
-                      onClick={() => handleDecrement(index)}
-                    >
-                      -
-                    </button>
-                    <p className=" font-semibold text-xl">
-                      {ticketType.quantity}
-                    </p>
-                    <button
-                      className="w-8 h-8 bg-[#060047] text-white font-semibold text-xl"
-                      onClick={() => handleIncrement(index)}
-                    >
-                      +
-                    </button>
+            {selectedTickets.length > 0 ? (
+              selectedTickets.map((ticketType, index) => (
+                <div
+                  className="w-full border-[1.5px] border-slate-300 rounded"
+                  key={index}
+                >
+                  <div className="flex justify-between pt-4 px-4">
+                    <h2 className="font-semibold text-xl">{ticketType.name}</h2>
+                    <div className="flex gap-4 items-center">
+                      <p className="font-semibold text-xl">
+                        ฿{ticketType.price}
+                      </p>
+                      <button
+                        className="w-8 h-8 bg-[#060047] text-white font-semibold text-xl"
+                        onClick={() => handleDecrement(index)}
+                      >
+                        -
+                      </button>
+                      <p className="font-semibold text-xl">
+                        {ticketType.quantity}
+                      </p>
+                      <button
+                        className="w-8 h-8 bg-[#060047] text-white font-semibold text-xl"
+                        onClick={() => handleIncrement(index)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+                  <div className="px-4 py-4 font-medium text-red-500">
+                    Available until {ticketType.sale_enddate}
+                  </div>
+                  <div className="px-4 pb-4 font-medium text-[#060047]"></div>
                 </div>
-                <div className="px-4 py-4 font-medium text-red-500">
-                  Available until {ticketType.sale_enddate}
-                </div>
-                <div className="px-4 pb-4 font-medium  text-[#060047]">
-                  {ticketType.remaining} remaining
-                </div>
+              ))
+            ) : (
+              <div className="w-full text-red-500 py-2 flex justify-center">
+                Seat Not Avaliable Now
               </div>
-            ))}
+            )}
           </div>
           <div className=" basis-1/3">
             <div className=" w-full border-[1.5px] px-4 py-4 border-slate-300 rounded min-h-[12rem]">

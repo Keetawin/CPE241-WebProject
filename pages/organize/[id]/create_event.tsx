@@ -34,7 +34,7 @@ const MenuProps = {
   },
 };
 
-export default function CreateEvent({categories, event_type}) {
+export default function CreateEvent({ categories, event_type }) {
   const [imageSrc, setImageSrc] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [uploadData, setUploadData] = useState(null);
@@ -172,7 +172,9 @@ export default function CreateEvent({categories, event_type}) {
     <main>
       <div className="container mx-auto px-10">
         <div className="flex flex-col items-center justify-center py-10">
-          <h1 className=" text-3xl font-bold text-[#060047] py-4">Create Events</h1>
+          <h1 className=" text-3xl font-bold text-[#060047] py-4">
+            Create Events
+          </h1>
           {/* Author: FormBold Team */}
           {/* Learn More: https://formbold.com */}
           <div className="mx-auto w-full max-w-[550px] my-5">
@@ -250,7 +252,7 @@ export default function CreateEvent({categories, event_type}) {
                     Event Type
                   </InputLabel>
                   <EventTypeSelect
-                    sx={{backgroundColor: "#ffffff"}}
+                    sx={{ backgroundColor: "#ffffff" }}
                     value={eventType}
                     onChange={handleChangeSelect}
                     eventType={event_type}
@@ -269,20 +271,21 @@ export default function CreateEvent({categories, event_type}) {
                     Categories
                   </InputLabel>
                   <CategorieSelect
-                    sx={{backgroundColor: "#ffffff"}}
+                    sx={{ backgroundColor: "#ffffff" }}
                     value={categoriesSearch}
-                    onChange={(e)=>{setCategoriesSearch(e.target.value)}}
+                    onChange={(e) => {
+                      setCategoriesSearch(e.target.value);
+                    }}
                     categories={categories}
-                    onDelete={
-                      (value: string) => {
-                        setCategoriesSearch((current) => current.filter((item) => item !== value));
-                      }
-                    }
-                    />
+                    onDelete={(value: string) => {
+                      setCategoriesSearch((current) =>
+                        current.filter((item) => item !== value)
+                      );
+                    }}
+                  />
                 </FormControl>
               </div>
               <div className="flex justify-between">
-
                 <div className="mb-5">
                   <label
                     htmlFor="start_date"
@@ -295,7 +298,7 @@ export default function CreateEvent({categories, event_type}) {
                       label="Start Date"
                       name="start_date"
                       id="start_date"
-                      sx={{backgroundColor: "#ffffff"}}
+                      sx={{ backgroundColor: "#ffffff" }}
                       value={startDate}
                       onChange={(newValue) => setStartDate(newValue)}
                       renderInput={(params) => (
@@ -321,7 +324,7 @@ export default function CreateEvent({categories, event_type}) {
                       label="End Date"
                       name="end_date"
                       id="end_date"
-                      sx={{backgroundColor: "#ffffff"}}
+                      sx={{ backgroundColor: "#ffffff" }}
                       value={endDate}
                       onChange={(newValue) => setEndDate(newValue)}
                       renderInput={(params) => (
@@ -334,7 +337,7 @@ export default function CreateEvent({categories, event_type}) {
                     />
                   </LocalizationProvider>
                 </div>
-              </div>          
+              </div>
 
               <div className="mb-5">
                 <label
@@ -353,7 +356,11 @@ export default function CreateEvent({categories, event_type}) {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                 />
-                  <LocationTextField onLocationSelect={(e)=>{setLocation(e)}} />
+                <LocationTextField
+                  onLocationSelect={(e) => {
+                    setLocation(e);
+                  }}
+                />
               </div>
 
               <div className="mb-5">
@@ -376,7 +383,16 @@ export default function CreateEvent({categories, event_type}) {
                 />
               </div>
               <div className="flex">
-                <Button className="ml-auto" type="submit" variant="contained" color="primary" style={{ backgroundColor: '#E90064' }}>Create Event</Button>
+                <Button
+                  onClick={handleSubmit}
+                  className="ml-auto"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ backgroundColor: "#E90064" }}
+                >
+                  Create Event
+                </Button>
               </div>
             </form>
             {errorMessage && (
@@ -397,16 +413,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         categories: categories,
-        event_type: event_type
+        event_type: event_type,
       },
     };
-    
   } catch (error) {
     console.error(error);
     return {
       props: {
         categories: null,
-        event_type: null
+        event_type: null,
       },
     };
   }
