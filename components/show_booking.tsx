@@ -1,30 +1,58 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { getSession, useSession } from "next-auth/react";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import Link from "next/link";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import axios from "axios";
 
 type Props = {
-    bookingid: string;
-    img: string;
-    eventName: string;
-    price: string;
-    quantity: string;
-  };
-  
+  bookingid: string;
+  img: string;
+  eventName: string;
+  eventType: string;
+  totalprice: string;
+  quantity: string;
+  tickets: Ticket[]; // Add tickets prop
+};
 
-  
-  export default function booking({ bookingid, img, eventName, price, quantity }) {
-    const [isRefund, setIsRefund] = useState(false);
-    const [open, setOpen] = useState(false)
-    const session = useSession()
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-    const handleClose = () => {
-      setOpen(false);
-    };
+type Ticket = {
+  ticket_id: string;
+  booking_id: string;
+  ticket_date: string;
+  ischeckin: boolean;
+  isrefund: boolean;
+  refundable: boolean;
+  seat_no: string;
+  seat_type_id: number;
+  seat_type: string;
+  price: string;
+};
+
+export default function booking({
+  bookingid,
+  img,
+  eventName,
+  eventType,
+  totalprice,
+  quantity,
+  tickets, // Add tickets prop
+}): JSX.Element {
+  const [isRefund, setIsRefund] = useState(false);
+  const [open, setOpen] = useState(false);
+  const session = useSession();
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <main>
