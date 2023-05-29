@@ -46,7 +46,7 @@ export default function MusicEvents() {
         event.event_type_id === 3 ||
         event.event_type_id === 4
     )
-    .slice(0, 6); // Limit the number of displayed events to 6
+    .slice(0, 4); // Limit the number of displayed events to 6
 
   return (
     <main>

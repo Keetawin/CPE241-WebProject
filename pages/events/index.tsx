@@ -21,37 +21,36 @@ type Event = {
   categories: string[];
 };
 
-export default function AllEventsPages({categories, event_type}) {
+export default function AllEventsPages({ categories, event_type }) {
   const [events, setEvents] = useState<Event[]>([]);
-  const router = useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [eventName, setEventName] = useState("")
-  const [eventType, setEventType] = useState("")
-  const [categoriesSearch, setCategoriesSearch] = useState<number[]>([])
-  const query = router.query
-  console.log(categoriesSearch)
+  const [eventName, setEventName] = useState("");
+  const [eventType, setEventType] = useState("");
+  const [categoriesSearch, setCategoriesSearch] = useState<number[]>([]);
+  const query = router.query;
+  console.log(categoriesSearch);
   useEffect(() => {
-    if(query.name){
-      console.log("hello")
-      setEventName(query.name.toString())
+    if (query.name) {
+      console.log("hello");
+      setEventName(query.name.toString());
     }
-  }, [query])
-  
+  }, [query]);
 
   useEffect(() => {
-    let api = "https://ticketapi.fly.dev/get_event"
-    let querys = []
-    if(eventName && eventName.length !== 0 && eventName !== "null"){
-      querys.push(`event_name=${eventName}`)
+    let api = "https://ticketapi.fly.dev/get_event";
+    let querys = [];
+    if (eventName && eventName.length !== 0 && eventName !== "null") {
+      querys.push(`event_name=${eventName}`);
     }
-    if(eventType && eventType.length !== 0 && eventType != "0"){
-      querys.push(`event_type_id=${eventType}`)
+    if (eventType && eventType.length !== 0 && eventType != "0") {
+      querys.push(`event_type_id=${eventType}`);
     }
-    if(categoriesSearch.length != 0){
-      querys.push(`categories_id=[${categoriesSearch.join(', ')}]`)
+    if (categoriesSearch.length != 0) {
+      querys.push(`categories_id=[${categoriesSearch.join(", ")}]`);
     }
-    if(querys.length !== 0){
-      api = api+"?"+querys.join("&")
+    if (querys.length !== 0) {
+      api = api + "?" + querys.join("&");
     }
     axios
       .get<Event[]>(api)
@@ -70,7 +69,7 @@ export default function AllEventsPages({categories, event_type}) {
     return dayjs(dateString).format("DD MMMM YYYY");
   };
 
-  const displayedEvents = events.slice(0, 6); // Limit the number of displayed events to 6
+  const displayedEvents = events; // Limit the number of displayed events to 6
 
   return (
     <main>
@@ -80,23 +79,27 @@ export default function AllEventsPages({categories, event_type}) {
           <div className="flex flex-col mx-2">
             <label>Categories</label>
             <CategorieSelect
-              sx={{width: "45ch", backgroundColor: "#ffffff"}}
+              sx={{ width: "45ch", backgroundColor: "#ffffff" }}
               value={categoriesSearch}
-              onChange={(e)=>{setCategoriesSearch(e.target.value)}}
+              onChange={(e) => {
+                setCategoriesSearch(e.target.value);
+              }}
               categories={categories}
-              onDelete={
-                (value: string) => {
-                  setCategoriesSearch((current) => current.filter((item) => item !== value));
-                }
-              }
-              />
+              onDelete={(value: string) => {
+                setCategoriesSearch((current) =>
+                  current.filter((item) => item !== value)
+                );
+              }}
+            />
           </div>
           <div className="flex flex-col mx-2">
             <label>Event Type</label>
             <EventTypeSelect
-              sx={{width: "45ch", backgroundColor: "#ffffff"}}
+              sx={{ width: "45ch", backgroundColor: "#ffffff" }}
               value={eventType}
-              onChange={(e)=>{setEventType(e.target.value)}}
+              onChange={(e) => {
+                setEventType(e.target.value);
+              }}
               eventType={event_type}
             />
           </div>
@@ -107,7 +110,10 @@ export default function AllEventsPages({categories, event_type}) {
           {displayedEvents && displayedEvents.length > 0 ? (
             displayedEvents.map((event) => (
               <Link
-                href={{ pathname: "/events/[id]", query: { id: event.event_id } }}
+                href={{
+                  pathname: "/events/[id]",
+                  query: { id: event.event_id },
+                }}
                 key={event.event_id}
               >
                 <EventCard
@@ -135,16 +141,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         categories: categories,
-        event_type: event_type
+        event_type: event_type,
       },
     };
-    
   } catch (error) {
     console.error(error);
     return {
       props: {
         categories: null,
-        event_type: null
+        event_type: null,
       },
     };
   }
