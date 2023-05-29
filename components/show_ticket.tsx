@@ -35,12 +35,13 @@ export default function ShowTicket({
   img,
   eventName,
   location,
-  event_startdate,
-  event_enddate,
+  eventStart,
+  eventEnd,
   refund,
   eventType,
   seatType,
   seatNo,
+  ticketDate
 }) {
   const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
@@ -79,11 +80,13 @@ export default function ShowTicket({
                 <EventSeatIcon className="mr-5" />
                 Seat NO. {seatNo}
               </h2>
+              <p className="font-light text-sm">
+                  Event Date: {dayjs(eventStart).format("DD/MM/YYYY")} - {dayjs(eventEnd).format("DD/MM/YYYY")}
+              </p>
               <h3 className="text-xl font-semibold mt-4">{eventName}</h3>
               <p className="font-light text-sm">
                 <CalendarMonthIcon className="mr-5" />
-                Event Date: {dayjs(event_startdate).format("DD/MM/YYYY")} -{" "}
-                {dayjs(event_enddate).format("DD/MM/YYYY")}
+                  Use Date: {dayjs(ticketDate).format("DD/MM/YYYY")}
               </p>
               <p className="font-regular text-sm">
                 <LocationOnIcon className="mr-5" />

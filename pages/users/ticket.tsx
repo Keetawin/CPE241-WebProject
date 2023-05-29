@@ -121,6 +121,7 @@ export default function Tickets() {
                         (event) => event.event_id === ticket.event_id
                       );
                       if (event) {
+                        console.log(event, ticket)
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
                             {!ticket.isrefund && (
@@ -129,6 +130,7 @@ export default function Tickets() {
                                 eventid={ticket.event_id}
                                 img={event.poster}
                                 seatType={ticket.seat_type}
+                                ticketDate={ticket.ticket_date}
                                 seatNo={ticket.seat_no}
                                 eventType={event.event_type}
                                 eventName={event.event_name}
@@ -172,6 +174,7 @@ export default function Tickets() {
                                 ticketid={ticket.ticket_id}
                                 eventid={ticket.event_id}
                                 img={event.poster}
+                                ticketDate={ticket.ticket_date}
                                 seatType={ticket.seat_type}
                                 seatNo={ticket.seat_no}
                                 eventType={event.event_type}
