@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { v4 } from "uuid";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const CheckoutPage = () => {
     const fetchPaymentData = async () => {
       try {
         const response = await axios.get(
-          `https://ticketapi.fly.dev/get_user_payment?user_id=${session?.user?.user_id}`
+          `https://ticketapi.fly.dev/get_user_payment?user_id=${id}`
         );
         setPaymentData(response.data);
       } catch (error) {
@@ -34,6 +35,10 @@ const CheckoutPage = () => {
 
   const selectedTickets = ticketType ? JSON.parse(ticketType) : [];
   const [refundableChecked, setRefundableChecked] = useState(false);
+  const uuid = v4();
+
+  // Remove hyphens and convert to decimal number
+  const numericUUID = parseInt(uuid.replace(/-/g, ""), 16);
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
@@ -66,7 +71,44 @@ const CheckoutPage = () => {
 
     if (paymentOption === "mastercard") {
       if (mastercardNumber && cardname && expirationDate && cvv) {
-        alert("Mastercard payment processed successfully.");
+        // Create an array of ticket objects
+        const ticketsData = selectedTickets.map((ticket, index) => {
+          if (ticket.quantity !== 0) {
+            return {
+              name: ticket.name,
+              price: ticket.price,
+              vat: (ticket.price * 7) / 100,
+              total: ticket.price * 1.07 * ticket.quantity,
+            };
+          }
+          return null;
+        });
+
+        // Calculate the total amount
+        const amount = ticketsData.reduce(
+          (total, ticket) => total + ticket.total,
+          0
+        );
+
+        // Create the request data object
+        const requestData = {
+          payment_info_id: selectedPaymentInfo?.payment_info_id, // Replace with the actual payment info ID
+          amount: amount,
+          booking_id: 1, // Replace with the actual booking ID
+        };
+
+        // Send the requestData object to the backend API
+        axios
+          .post("https://ticketapi.fly.dev/confirm_payment", requestData)
+          .then((response) => {
+            // Handle the response from the API
+            console.log(response.data);
+            alert("Mastercard payment processed successfully.");
+          })
+          .catch((error) => {
+            // Handle errors
+            console.error("Error processing payment:", error);
+          });
       } else {
         alert("Please fill in all required fields for Mastercard payment.");
       }

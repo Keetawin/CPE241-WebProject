@@ -18,20 +18,29 @@ import {
   TextField,
 } from "@mui/material";
 import { useState, useEffect, Fragment, useRef } from "react";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar, Pie, Line } from "react-chartjs-2";
 import {
   Chart,
   CategoryScale,
   LinearScale,
   BarElement,
   ArcElement,
+  PointElement,
+  LineElement,
 } from "chart.js";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import dayjs from "dayjs";
 
 // Register the necessary elements and scales
-Chart.register(CategoryScale, LinearScale, BarElement, ArcElement);
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement
+);
 
 interface EventData {
   event_id: number;
@@ -67,7 +76,7 @@ export default function EventDashBoard() {
   const [eventData2, setEventData2] = useState<EventData[]>([]);
   const [getTable, setGetTable] = useState([]);
   const [transactions, setTransactions] = useState([]);
-
+  const [numberOfFollowers, setNumberOfFollowers] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -180,6 +189,37 @@ export default function EventDashBoard() {
             const value = context.parsed;
             return `${label}: ${value}`;
           },
+        },
+      },
+    },
+  };
+
+  const countByDate = {};
+  getTable.forEach((entry) => {
+    const date = dayjs(entry.payment_date).format("DD/MM/YYYY");
+    countByDate[date] = countByDate[date] ? countByDate[date] + 1 : 1;
+  });
+
+  const chartData3 = {
+    labels: Object.keys(countByDate),
+    datasets: [
+      {
+        label: "Count",
+        data: Object.values(countByDate),
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const chartOptions3 = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Count",
         },
       },
     },
@@ -451,6 +491,35 @@ export default function EventDashBoard() {
     return dayjs(date).format("DD MMMM YYYY"); // Format the date using dayjs
   };
 
+  const formatPaymentDates = (paymentDates) => {
+    return paymentDates.map((date) => dayjs(date).format("DD/MM/YYYY"));
+  };
+
+  const formattedDates = formatPaymentDates(
+    getTable.map((item) => item.payment_date)
+  );
+
+  useEffect(() => {
+    const fetchEventFollowers = async () => {
+      try {
+        const response = await axios.get(
+          `https://ticketapi.fly.dev/get_event_follower?event_id=${eventId}`
+        );
+        const eventFollowers = response.data;
+
+        // Access the number of followers
+        const followersCount = eventFollowers[0].number_of_follower;
+        setNumberOfFollowers(followersCount);
+
+        // Do something with the number of followers
+      } catch (error) {
+        console.error("Error fetching event followers:", error);
+      }
+    };
+
+    // Call the function to fetch event followers
+    fetchEventFollowers();
+  }, []);
   return (
     <main>
       <div className="container mx-auto px-10">
@@ -555,9 +624,8 @@ export default function EventDashBoard() {
             <div className="grid grid-cols-3 gap-8 w-full h-full py-8 ">
               <div className="w-full flex h-48 rounded-lg border-[1.5px] ">
                 <div className="flex justify-center px-4 flex-col gap-6 ">
-                  <p className=" text-lg font-semibold">Total Ticket</p>
-                  <p className=" font-medium text-lg">Lorem</p>
-                  <p>Percent</p>
+                  <p className=" text-lg font-semibold">Total Followed</p>
+                  <p className=" font-medium text-lg">{numberOfFollowers}</p>
                 </div>
                 <div className="flex  px-4 flex-col py-8"></div>
               </div>
@@ -579,6 +647,7 @@ export default function EventDashBoard() {
                 <div className="flex justify-center px-4 flex-col gap-6 ">
                   <p className=" text-lg font-semibold">Age</p>
                 </div>
+
                 <div className="flex justify-center w-full">
                   <Pie
                     className="w-20 h-20 py-2"
@@ -588,9 +657,20 @@ export default function EventDashBoard() {
                 </div>
               </div>
             </div>
-
-            <div className="py-8">
-              <Bar data={data} options={options} />
+            <div>
+              {" "}
+              <p className=" text-lg py-2 px-2 font-semibold">Total Sale</p>
+              <div className="flex justify-center">
+                <div style={{ width: "800px" }}>
+                  {getTable.length > 0 ? (
+                    <Line
+                      data={chartData3}
+                      options={chartOptions3}
+                      height={200}
+                    />
+                  ) : null}
+                </div>
+              </div>
             </div>
 
             <h1 className=" text-2xl font-bold py-4">Transaction</h1>
