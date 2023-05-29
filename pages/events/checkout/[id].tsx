@@ -69,16 +69,6 @@ const CheckoutPage = () => {
       } else {
         alert('Please fill in all required fields for Mastercard payment.');
       }
-    } else if (paymentOption === 'promptpay') {
-      if (promptPayNumber) {
-        const amount = calculateTotalPrice();
-        const qrCodeContent = `promptpay:${promptPayNumber}?amount=${amount}`;
-        const qrCodeSize = 200;
-        const qrCodeImage = <QRCode value={qrCodeContent} size={qrCodeSize} />;
-        alert(qrCodeImage);
-      } else {
-        alert('Please fill in all required fields for PromptPay payment.');
-      }
     } 
   };  
 

@@ -4,16 +4,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { getSession, useSession } from "next-auth/react";
-import ShowTicket from "@/components/show_ticket";
+import ShowBooking from "@/components/show_booking";
 
-type Ticket = {
-  ticket_id: string;
-  event_id: string;
-  seat_type: string;
-  seat_no: string;
-  ticket_date: string;
-  refundable: string;
-  isrefund: string;
+type Booking = {
+    booking_id: string;
+    total_price: string;
+    quantity: string;
+    event_id: string;
+    booking_date: string; 
 };
 
 type Event = {
@@ -24,7 +22,7 @@ type Event = {
   poster: string;
 };
 
-export default function Tickets() {
+export default function Booking() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -34,7 +32,7 @@ export default function Tickets() {
       console.log(session.data?.user?.user_id)
       axios
         .get<Ticket[]>(
-          `https://ticketapi.fly.dev/user_ticket?user_id='${session.data?.user?.user_id}'`
+          `https://ticketapi.fly.dev/user_booking?user_id='${session.data?.user?.user_id}'`
         )
         .then((response) => {
           setLoading(false);
@@ -69,17 +67,8 @@ export default function Tickets() {
     return dayjs(dateString).format("DD-MM-YYYY");
   };
 
-  const tabs = [
-    { id: 1, label: "Active Tickets" },
-    { id: 2, label: "Past Tickets" },
-  ];
-
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
   const [open, setOpen] = useState(false);
 
-  const handleTabClick = (tabId) => {
-    setActiveTab(tabId);
-  };
 
   return (
     <main>
@@ -93,23 +82,7 @@ export default function Tickets() {
             </div>
           </div>
           <div>
-            <div className="flex space-x-4 py-">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`${
-                    activeTab === tab.id
-                      ? "bg-[#060047] text-white font-medium"
-                      : "bg-gray-300"
-                  } px-4 py-2 font-medium rounded-md`}
-                  onClick={() => handleTabClick(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-  
-            {activeTab === 1 && (
+            
               <main>
                 {tickets.filter((ticket) => new Date(ticket.ticket_date) >= new Date()).length > 0 ? (
                   tickets.map((ticket) => {
@@ -119,7 +92,7 @@ export default function Tickets() {
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
                             {!ticket.isrefund && (
-                              <ShowTicket
+                              <ShowBooking
                                 ticketid={ticket.ticket_id}
                                 eventid={ticket.event_id}
                                 img={event.poster}
@@ -141,42 +114,6 @@ export default function Tickets() {
                   <p></p>
                 )}
               </main>
-            )}
-
-            {activeTab === 2 && (
-              <main>
-                {tickets.filter((ticket) => new Date(ticket.ticket_date) < new Date()).length > 0 ? (
-                  tickets.map((ticket) => {
-                    if (new Date(ticket.ticket_date) < new Date()) {
-                      const event = events.find((event) => event.event_id === ticket.event_id);
-                      if (event) {
-                        return (
-                          <div className="pl-10 w-full" key={event.event_id}>
-                            {!ticket.isrefund && (
-                              <ShowTicket
-                                ticketid={ticket.ticket_id}
-                                eventid={ticket.event_id}
-                                img={event.poster}
-                                eventName={event.event_name}
-                                location={event.location}
-                                eventStart={formatDate(event.event_startdate)}
-                                eventEnd={formatDate(event.event_enddate)}
-                                refund={ticket.refundable}
-                                isrefund={ticket.isrefund}
-                              />
-                            )}
-                            
-                          </div>
-                        );
-                      }
-                    }
-                    return null;
-                  })
-                ) : (
-                  <p></p>
-                )}
-              </main>
-            )}
           </div>
         </div>
       </div>
@@ -184,3 +121,4 @@ export default function Tickets() {
   );
   
 }
+
