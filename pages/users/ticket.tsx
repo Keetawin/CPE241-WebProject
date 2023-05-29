@@ -93,7 +93,7 @@ export default function Tickets() {
               <MenuBar />
             </div>
           </div>
-          <div>
+          <div className="w-full">
             <div className="flex space-x-4 py-">
               {tabs.map((tab) => (
                 <button
@@ -111,7 +111,7 @@ export default function Tickets() {
             </div>
 
             {activeTab === 1 && (
-              <main>
+              <main className="mb-10">
                 {tickets.filter(
                   (ticket) => new Date(ticket.ticket_date) >= new Date()
                 ).length > 0 ? (
@@ -151,7 +151,7 @@ export default function Tickets() {
             )}
 
             {activeTab === 2 && (
-              <main>
+              <main className="mb-10">
                 {tickets.filter(
                   (ticket) => new Date(ticket.ticket_date) < new Date()
                 ).length > 0 ? (
@@ -159,8 +159,9 @@ export default function Tickets() {
                     if (new Date(ticket.ticket_date) < new Date()) {
                       const event = events.find(
                         (event) => event.event_id === ticket.event_id
-                      );
-                      if (event) {
+                        );
+                        if (event) {
+                        // console.log(ticket, event)
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
                             {!ticket.isrefund && (
@@ -168,10 +169,13 @@ export default function Tickets() {
                                 ticketid={ticket.ticket_id}
                                 eventid={ticket.event_id}
                                 img={event.poster}
+                                seatType={ticket.seat_type}
+                                seatNo={ticket.seat_no}
+                                eventType={event.event_type}
                                 eventName={event.event_name}
                                 location={event.location}
-                                eventStart={formatDate(event.event_startdate)}
-                                eventEnd={formatDate(event.event_enddate)}
+                                eventStart={event.event_startdate}
+                                eventEnd={event.event_enddate}
                                 refund={ticket.refundable}
                                 isrefund={ticket.isrefund}
                               />

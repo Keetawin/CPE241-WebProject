@@ -26,6 +26,7 @@ export default function booking({
   eventName,
   price,
   quantity,
+  eventType
 }) {
   const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
@@ -48,19 +49,21 @@ export default function booking({
 
   return (
     <main>
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-8 w-full">
         <div className="flex flex-col w-full">
-          <div className="border-2 border-[#060047] w-full h-50 flex">
+          <div className="w-full h-50 flex bg-white drop-shadow-md">
             <div className="align-middle items-center">
               <img
-                className="h-full w-36 object-cover object-center"
+                className="h-full w-40 object-cover object-center"
                 src={img}
                 alt="Your Image Alt Text"
               />
             </div>
-            <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
-              <p>{eventName}</p>
-              <p className="font-medium text-sm">{price}</p>
+            <div className="px-4 py-8  flex flex-col ml-8">
+              <h5 className="text-md font-light">Order #{bookingid}</h5>
+              <h2 className="text-md text-[#E90064] text-md">{eventType}</h2>
+              <h3 className="font-semibold text-2xl">{eventName}</h3>
+              <p className="font-medium text-sm">Price: {price}</p>
               <p className="font-medium text-sm">Quantity : {quantity}</p>
             </div>
             <div className="flex flex-col px-4 py-8 gap-4 ml-auto">

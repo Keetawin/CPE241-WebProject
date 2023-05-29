@@ -81,8 +81,8 @@ export default function Booking() {
               <MenuBar />
             </div>
           </div>
-          <div>
-            <div>
+          <div className="w-full mb-10">
+            <div className="w-full">
               {booking.map((booking) => {
                 const matchingEvent = events.find(
                   (event) => event.event_id === booking.event_id
@@ -90,11 +90,13 @@ export default function Booking() {
                 if (!matchingEvent) {
                   return null; // Skip rendering if no matching event is found
                 }
+                console.log(booking, matchingEvent)
                 return (
-                  <div key={booking.booking_id}>
+                  <div key={booking.booking_id} >
                     <div className="pl-10 w-full">
                       <ShowBooking
                         bookingid={booking.booking_id}
+                        eventType={matchingEvent.event_type}
                         img={matchingEvent.poster}
                         eventName={matchingEvent.event_name}
                         price={booking.total_price}

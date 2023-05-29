@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { getSession, useSession } from "next-auth/react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EventSeatIcon from '@mui/icons-material/EventSeat';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+
 import Link from "next/link";
 import {
   Button,
@@ -11,6 +15,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import axios from "axios";
+import dayjs from "dayjs";
 
 type Props = {
   ticketid: string;
@@ -33,6 +38,9 @@ export default function ShowTicket({
   eventStart,
   eventEnd,
   refund,
+  eventType,
+  seatType,
+  seatNo
 }) {
   const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
@@ -57,22 +65,26 @@ export default function ShowTicket({
     <main>
       <div className="flex justify-center mt-8">
         <div className="flex flex-col w-full">
-          <div className="border-2 border-[#060047] w-full h-50 flex">
+          <div className="w-full h-50 flex bg-[#131724] drop-shadow-md text-white">
             <div className="align-middle items-center">
               <img
-                className="h-full w-36 object-cover object-center"
+                className="h-full w-40 object-cover object-center"
                 src={img}
                 alt="Your Image Alt Text"
               />
             </div>
-            <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
-              <p>{eventName}</p>
-              <p className="font-medium text-sm">{location}</p>
-              <p className="font-medium text-sm">
-                Event Date: {eventStart} - {eventEnd}
+            <div className="px-4 text-lg py-8 flex flex-col ml-8">
+              <h2 className="text-2xl font-semibold ">{seatType}</h2>
+              <h2 className="text-md text-[#E90064]"><EventSeatIcon className="mr-5"/>Seat NO. {seatNo}</h2>
+              <h3 className="text-xl font-semibold mt-4">{eventName}</h3>
+              <p className="font-light text-sm">
+              <CalendarMonthIcon className="mr-5"/>
+                Event Date: {dayjs(eventStart).format("DD/MM/YYYY")} - {dayjs(eventEnd).format("DD/MM/YYYY")}
               </p>
+              <p className="font-regular text-sm"><LocationOnIcon className="mr-5"/>Location</p>
+              <p className="font-light text-sm ml-10">{location}</p>
             </div>
-            <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
+            <div className="flex flex-col px-4 py-8 gap-4 ml-auto bg-white">
               <Link
                 href={{ pathname: "/events/[id]", query: { id: eventid } }}
                 key={eventid}
