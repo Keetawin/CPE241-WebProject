@@ -280,7 +280,6 @@ export default function Organize({ userOrganize, userPayment }) {
 }
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  // console.log("test", session)
   const user_id = session?.user?.user_id;
   // console.log(user_id)
 

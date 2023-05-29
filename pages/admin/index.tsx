@@ -188,7 +188,7 @@ const Admin = () => {
 
       <div className="pt-4">
         <h2 className=" text-lg py-2 px-2 font-semibold">Top 5 Sale Popular</h2>
-        <div>
+        <div className="cursor-none">
           <Bar height={100} data={totalSalesChartData} options={chartOptions} />
         </div>
         <div>
