@@ -91,7 +91,9 @@ export default function booking({
                 <DialogContent>
                   <DialogContentText id="alert-dialog-description">
                   {tickets.map((ticket) => (
-                      <div key={ticket.ticket_id} className="border-2 border-[#060047] w-full h-50 flex">
+                      <div key={ticket.ticket_id} className="border-2 border-[#060047] w-full h-50 flex"
+                      style={{ marginTop: '20px' }}
+                      >
                         <div className="align-middle items-center">
                           <img
                             className="h-full w-36 object-cover object-center"
