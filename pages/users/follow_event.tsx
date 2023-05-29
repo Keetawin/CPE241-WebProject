@@ -9,7 +9,7 @@ import Link from "next/link";
 import EventCard from "@/components/event_card";
 import dayjs from "dayjs";
 import { Button } from "@nextui-org/react";
-import dayjs from "dayjs";
+
 export default function Follow_Event({ userFollowedEvent }) {
   const { data: session } = useSession();
   console.log(userFollowedEvent);
@@ -31,7 +31,7 @@ export default function Follow_Event({ userFollowedEvent }) {
             </div>
             <div className="pl-10 w-full">
               {userFollowedEvent.length > 0 ? (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-6">
                   {userFollowedEvent.map((event) => (
                     <Link
                       href={{
@@ -41,7 +41,9 @@ export default function Follow_Event({ userFollowedEvent }) {
                       key={event.event_id}
                     >
                       <EventCard
-                        eventDate={dayjs(event.event_startdate).format("DD MMMM YYYY")}
+                        eventDate={dayjs(event.event_startdate).format(
+                          "DD MMMM YYYY"
+                        )}
                         img={event.poster}
                         eventName={event.event_name}
                         location={event.location}

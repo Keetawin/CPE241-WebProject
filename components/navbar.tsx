@@ -145,7 +145,7 @@ export default function Navbar() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <div className="flex  mr-10 justify-center align-middle mt-2">
             {session && session?.user?.user_role === "User" && (
-              <Link href="/organize">
+              <Link className="ml-2" href="/organize">
                 <span className="font-semibold text-xl text-white">
                   Organize
                 </span>
@@ -153,8 +153,10 @@ export default function Navbar() {
             )}
 
             {session && session?.user?.user_role === "Admin" && (
-              <Link href="/admin">
-                <span className="font-semibold text-xl text-white align-text-center">Admin</span>
+              <Link className="ml-2" href="/admin">
+                <span className="font-semibold text-xl  text-white align-text-center">
+                  Admin
+                </span>
               </Link>
             )}
           </div>
@@ -179,7 +181,9 @@ export default function Navbar() {
                     <div className="flex items-center justify-center mt-2">
                       <Link href="/users/booking">
                         <Button
-                          startIcon={<ShoppingCartIcon style={{ fontSize: 30 }} />}
+                          startIcon={
+                            <ShoppingCartIcon style={{ fontSize: 30 }} />
+                          }
                           style={{ color: "#FFFFFF", marginLeft: "30px" }}
                         />
                       </Link>
@@ -259,7 +263,6 @@ export default function Navbar() {
             // </Link>
           )}
         </div>
-
       </nav>
       <Dialog
         as="div"
