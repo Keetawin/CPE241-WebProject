@@ -56,7 +56,7 @@ export default function Tickets() {
               );
               setEvents((prevEvents) => [...prevEvents, ...sortedEvents]);
               setLoading(false);
-              console.log(response);
+              // console.log(response);
             })
             .catch((error) => console.error(error));
         });
@@ -128,10 +128,13 @@ export default function Tickets() {
                                 ticketid={ticket.ticket_id}
                                 eventid={ticket.event_id}
                                 img={event.poster}
+                                seatType={ticket.seat_type}
+                                seatNo={ticket.seat_no}
+                                eventType={event.event_type}
                                 eventName={event.event_name}
                                 location={event.location}
-                                eventStart={formatDate(event.event_startdate)}
-                                eventEnd={formatDate(event.event_enddate)}
+                                eventStart={event.event_startdate}
+                                eventEnd={event.event_enddate}
                                 refund={ticket.refundable}
                                 isrefund={ticket.isrefund}
                               />
@@ -161,7 +164,7 @@ export default function Tickets() {
                         (event) => event.event_id === ticket.event_id
                         );
                         if (event) {
-                        // console.log(ticket, event)
+                        console.log(ticket, event)
                         return (
                           <div className="pl-10 w-full" key={event.event_id}>
                             {!ticket.isrefund && (

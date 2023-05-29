@@ -42,7 +42,7 @@ export default function booking({
   eventType,
   totalprice,
   quantity,
-  tickets, // Add tickets prop
+  tickets, 
 }): JSX.Element {
   const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
@@ -75,7 +75,7 @@ export default function booking({
             </div>
             <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
               <Link
-                href={{ pathname: "/user/[id]", query: { id: bookingid } }}
+                href={{ pathname: "/events/payment/[id]", query: { id: bookingid } }}
                 key={bookingid}
               >
                 <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
