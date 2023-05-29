@@ -22,7 +22,28 @@ const MenuBar = () => {
                 <span className="ml-3 text-black font-medium">Tickets</span>
               </Link>
             </li>
-
+            <li>
+              <Link
+                href="/users/booking"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100"
+              >
+                <svg
+                  className="flex-shrink-0 w-6 h-6 text-black transition duration-75 "
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4 6.414L.757 3.172l1.415-1.415L5.414 5h15.242a1 1 0 0 1 .958 1.287l-2.4 8a1 1 0 0 1-.958.713H6v2h11v2H5a1 1 0 0 1-1-1V6.414zM5.5 23a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm12 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
+                  Shopping Cart
+                </span>
+              </Link>
+            </li>
             <li>
               <Link
                 href="/users/follow_event"

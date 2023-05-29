@@ -27,6 +27,6 @@
     "pages/users/account.jsx",
     "pages/first-page.jsx",
     "pages/api/auth/[...nextauth].js"
-, "pages/users/create.jsx", "components/location_text_field.jsx"  ],
+, "pages/users/create.jsx"  ],
   "exclude": ["node_modules"]
 }

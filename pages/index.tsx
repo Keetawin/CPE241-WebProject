@@ -27,7 +27,7 @@ export default function Home({ categories, event_type }) {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        <div className="container mx-auto ">
+        <div className="container mx-auto px-10">
           <h1 className="text-2xl font-bold py-4">Popular Events</h1>
           <AllEventsPopular />
 

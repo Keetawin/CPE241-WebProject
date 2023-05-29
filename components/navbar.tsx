@@ -2,6 +2,8 @@ import { Fragment, useState } from "react";
 import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
 import Image from "next/image";
 import { Link } from "@nextui-org/react";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Button } from "@mui/material";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import {
@@ -207,6 +209,12 @@ export default function Navbar() {
                           My Tickets
                         </Link>
                         <Link
+                          href="/users/booking"
+                          className="popover-dropdown-item min-w-full"
+                        >
+                          My Booking
+                        </Link>
+                        <Link
                           href="/users/follow_event"
                           className="popover-dropdown-item min-w-full"
                         >
@@ -218,6 +226,7 @@ export default function Navbar() {
                         >
                           Account Settings
                         </Link>
+
                         <button
                           type="button"
                           onClick={() => handleSignOut()}
@@ -239,6 +248,16 @@ export default function Navbar() {
             //   Log out <span aria-hidden="true">&rarr;</span>
             // </Link>
           )}
+        </div>
+        <div className="flex lg:flex lg:justify-end">
+          <div className="flex items-center justify-center mt-2">
+            <Link href="/users/booking">
+              <Button
+                startIcon={<ShoppingCartIcon style={{ fontSize: 30 }} />}
+                style={{ color: "#FFFFFF", marginLeft: "30px" }}
+              />
+            </Link>
+          </div>
         </div>
       </nav>
       <Dialog

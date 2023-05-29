@@ -21,7 +21,7 @@ export default function Follow_Event({ userFollowedEvent }) {
       {session && (
         <div className="container mx-auto px-10">
           <h1 className="text-2xl font-bold py-6">Follow Event</h1>
-          <div className="flex">
+          <div className="flex h-full">
             <div className="flex flex-col">
               <ProfileCard />
               <div className="my-4">
@@ -30,7 +30,7 @@ export default function Follow_Event({ userFollowedEvent }) {
             </div>
             <div className="pl-10 w-full">
               {userFollowedEvent.length > 0 ? (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 h-full gap-8">
                   {userFollowedEvent.map((event) => (
                     <Link
                       href={{

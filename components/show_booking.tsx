@@ -19,7 +19,7 @@ type Props = {
   
 
   
-  export default function ShowTicket({ ticketid, eventid, img, eventName, location, eventStart, eventEnd, refund }) {
+  export default function booking({ ticketid, eventid, img, eventName, location, eventStart, eventEnd, refund }) {
     const [isRefund, setIsRefund] = useState(false);
     const [open, setOpen] = useState(false)
     const session = useSession()
