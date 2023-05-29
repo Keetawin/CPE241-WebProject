@@ -69,7 +69,7 @@ const EventDetail = ({ event }: Props) => {
     if (event && event.event_id) {
       fetchTicketTypes();
     }
-  }, [event.event_id]);
+  }, [event]);
 
   // Rest of the code...
 

@@ -102,7 +102,7 @@ export default function ShowTicket({
                 key={eventid}
               >
                 <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
-                  View Ticket
+                  View Event
                 </button>
               </Link>
 
