@@ -91,7 +91,6 @@ export default function Booking() {
                 }
                 return (
                 <div key={booking.booking_id}>
-                    <h3>Booking ID: {booking.booking_id}</h3>
                     <div className="pl-10 w-full">
                     <ShowBooking
                         bookingid={booking.booking_id}

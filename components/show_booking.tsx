@@ -56,7 +56,7 @@ type Props = {
                                 key={bookingid}
                             >
                                 <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
-                                    View Ticket
+                                    Comfirm Payment
                                 </button>
                             </Link>
                             
@@ -67,11 +67,30 @@ type Props = {
                             aria-describedby="alert-dialog-description"
                             >
                             <DialogTitle id="alert-dialog-title">
-                                {"Delete this payment information?"}
+                                {"Ticket in this Transaction"}
                             </DialogTitle>
                             <DialogContent>
                                 <DialogContentText id="alert-dialog-description">
-                                delete this payment information permarnently
+
+
+                                <div className="border-2 border-[#060047] w-full h-50 flex">
+                                    <div className="align-middle items-center">
+                                        <img
+                                        className="h-full w-36 object-cover object-center"
+                                        src={img}
+                                        alt="Your Image Alt Text"
+                                        />
+                                    </div>
+                                    <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
+                                        <p>{eventName}</p>
+                                        <p className="font-medium text-sm">{location}</p>
+                                        <p className="font-medium text-sm">Event Date: {eventStart} - {eventEnd}</p>
+                                    </div>
+                                </div>
+                                
+
+
+
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
