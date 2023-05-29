@@ -6,20 +6,16 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import axios from "axios";
 
 type Props = {
-    ticketid: string;
-    eventid: string;
+    bookingid: string;
     img: string;
     eventName: string;
-    location: string;
-    eventStart: string;
-    eventEnd: string;
-    refund: string;
-    isrefund: string;
+    price: string;
+    quantity: string;
   };
   
 
   
-  export default function booking({ ticketid, eventid, img, eventName, location, eventStart, eventEnd, refund }) {
+  export default function booking({ bookingid, img, eventName, price, quantity }) {
     const [isRefund, setIsRefund] = useState(false);
     const [open, setOpen] = useState(false)
     const session = useSession()
@@ -51,13 +47,13 @@ type Props = {
                         </div>
                         <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
                             <p>{eventName}</p>
-                            <p className="font-medium text-sm">{location}</p>
-                            <p className="font-medium text-sm">Event Date: {eventStart} - {eventEnd}</p>
+                            <p className="font-medium text-sm">{price}</p>
+                            <p className="font-medium text-sm">Quantity : {quantity}</p>
                         </div>
                         <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
                             <Link
-                                href={{ pathname: "/events/[id]", query: { id: eventid } }}
-                                key={eventid}
+                                href={{ pathname: "/user/[id]", query: { id: bookingid } }}
+                                key={bookingid}
                             >
                                 <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
                                     View Ticket
@@ -79,23 +75,17 @@ type Props = {
                                 </DialogContentText>
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleClose}>Cancle</Button>
-                                <Button onClick={()=>handleRefund(ticketid)} autoFocus style={{ color: '#E90064' }}>
-                                Refund
-                                </Button>
+                                <Button onClick={handleClose}>Close</Button>
+
                             </DialogActions>
                             </Dialog>
-
-                            {refund && (
                                 <Button
                                     onClick={handleClickOpen}
                                     variant="text"
-                                    startIcon={<DeleteIcon />}
-                                    style={{ color: '#E90064' , marginTop: '10px'}}
+                                    className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md"
                                 >
-                                    refund
+                                    Show data
                                 </Button>
-                            )}
                         </div>
                         </div>
                     </div>
