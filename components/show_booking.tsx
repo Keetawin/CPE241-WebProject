@@ -26,89 +26,83 @@ type Props = {
       setOpen(false);
     };
 
-    const handleRefund = (ticketid: number) => {
-        axios.put(`https://ticketapi.fly.dev/refund_ticket/${ticketid}`).then(() => {
-          setIsRefund(true);
-          handleClose()
-        });
-      };
-  
-    return (
-        <main>
-                    <div className="flex justify-center mt-8" >
-                    <div className="flex flex-col w-full">
-                        <div className="border-2 border-[#060047] w-full h-50 flex">
+  return (
+    <main>
+      <div className="flex justify-center mt-8 w-full">
+        <div className="flex flex-col w-full">
+          <div className="w-full h-50 flex bg-white drop-shadow-md">
+            <div className="align-middle items-center">
+              <img
+                className="h-full w-40 object-cover object-center"
+                src={img}
+                alt="Your Image Alt Text"
+              />
+            </div>
+            <div className="px-4 py-8  flex flex-col ml-8">
+              <h5 className="text-md font-light">Order #{bookingid}</h5>
+              <h2 className="text-md text-[#E90064] text-md">{eventType}</h2>
+              <h3 className="font-semibold text-2xl">{eventName}</h3>
+              <p className="font-medium text-sm">Price: {totalprice}</p>
+              <p className="font-medium text-sm">Quantity : {quantity}</p>
+            </div>
+            <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
+              <Link
+                href={{ pathname: "/pages/payment/[id]", query: { id: bookingid } }}
+                key={bookingid}
+              >
+                <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
+                  Comfirm Payment
+                </button>
+              </Link>
+
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {"Ticket in this Transaction"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                  {tickets.map((ticket) => (
+                      <div key={ticket.ticket_id} className="border-2 border-[#060047] w-full h-50 flex"
+                      style={{ marginTop: '20px' }}
+                      >
                         <div className="align-middle items-center">
-                            <img
+                          <img
                             className="h-full w-36 object-cover object-center"
                             src={img}
                             alt="Your Image Alt Text"
-                            />
+                          />
                         </div>
                         <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
-                            <p>{eventName}</p>
-                            <p className="font-medium text-sm">{price}</p>
-                            <p className="font-medium text-sm">Quantity : {quantity}</p>
+                          <p>{eventName}</p>
+                          <p className="font-medium text-sm">Seat Type: {ticket.seat_type}</p>
+                          <p className="font-medium text-sm">Seat No: {ticket.seat_no}</p>
+                          <p className="font-medium text-sm">Price: {ticket.price}</p>
                         </div>
-                        <div className="flex flex-col px-4 py-8 gap-4 ml-auto">
-                            <Link
-                                href={{ pathname: "/user/[id]", query: { id: bookingid } }}
-                                key={bookingid}
-                            >
-                                <button className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md">
-                                    Comfirm Payment
-                                </button>
-                            </Link>
-                            
-                            <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                            >
-                            <DialogTitle id="alert-dialog-title">
-                                {"Ticket in this Transaction"}
-                            </DialogTitle>
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-
-
-                                <div className="border-2 border-[#060047] w-full h-50 flex">
-                                    <div className="align-middle items-center">
-                                        <img
-                                        className="h-full w-36 object-cover object-center"
-                                        src={img}
-                                        alt="Your Image Alt Text"
-                                        />
-                                    </div>
-                                    <div className="px-4 text-lg py-8 font-semibold flex flex-col gap-4">
-                                        <p>{eventName}</p>
-                                        <p className="font-medium text-sm">{location}</p>
-                                        <p className="font-medium text-sm">Event Date: {eventStart} - {eventEnd}</p>
-                                    </div>
-                                </div>
+                      </div>
+                    ))}
                                 
-
-
-
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose}>Close</Button>
-
-                            </DialogActions>
-                            </Dialog>
-                                <Button
-                                    onClick={handleClickOpen}
-                                    variant="text"
-                                    className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md"
-                                >
-                                    Show data
-                                </Button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-      );
-    }
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose}>Close</Button>
+                </DialogActions>
+              </Dialog>
+              <Button
+                onClick={handleClickOpen}
+                variant="text"
+                className="bg-[#060047] text-sm text-white font-semibold py-2 px-6 rounded-md"
+              >
+                Show data
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
