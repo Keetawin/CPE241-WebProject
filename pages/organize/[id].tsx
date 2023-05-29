@@ -18,17 +18,69 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+} from "chart.js";
+
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement
+);
 
 export default function Dashboard() {
   const router = useRouter();
   const { id } = router.query;
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+
   const [organizeData, setOrganizeData] = useState({
     organize_id: id,
     user_id: "",
   });
   const [members, setMembers] = useState([]);
+  const [eventData1, setEventData1] = useState<EventData[]>([]);
+  const [eventData2, setEventData2] = useState<EventData[]>([]);
+
+  useEffect(() => {
+    const fetchData1 = async () => {
+      try {
+        const response = await axios.get<EventData[]>(
+          "https://ticketapi.fly.dev/get_event"
+        );
+        setEventData1(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData1();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get<EventData[]>(
+          "https://ticketapi.fly.dev/get_event_sale"
+        );
+        setEventData2(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   function closeModal() {
     setIsOpen(false);
@@ -100,6 +152,84 @@ export default function Dashboard() {
     );
   }
 
+  let totalSale = 0;
+  let totalRefund = 0;
+
+  eventData2.forEach((event) => {
+    if (event.event_id) {
+      const sale = parseInt(event.total_sale);
+      if (!isNaN(sale)) {
+        totalSale += sale;
+      }
+    }
+  });
+
+  eventData2.forEach((event) => {
+    if (event.event_id) {
+      const refud = parseInt(event.total_refund);
+      if (!isNaN(refud)) {
+        totalRefund += refud;
+      }
+    }
+  });
+
+  // Sort the eventData2 array in descending order based on total_sale
+  const sortedEvents = eventData2.sort((a, b) => b.total_sale - a.total_sale);
+  const sortedEvents1 = eventData1.sort(
+    (a, b) => parseInt(b.follower) - parseInt(a.follower)
+  );
+  // Take the top 5 events from the sorted array
+  const top5Events = sortedEvents.slice(0, 5);
+  const top5Events1 = sortedEvents1.slice(0, 5);
+  // Extract event names and total sales from the top 5 events
+  const eventNames = top5Events.map((event) => event.event_name);
+  const totalSales = top5Events.map((event) => event.total_sale);
+  const followers = top5Events1.map((event) => parseInt(event.follower));
+  // Prepare data and labels for the bar chart
+  const chartData = {
+    labels: eventNames,
+    datasets: [
+      {
+        label: "Total Sale",
+        data: totalSales,
+        backgroundColor: "rgba(75, 192, 192, 0.6)", // Customize the bar color
+      },
+    ],
+  };
+
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          precision: 0, // Remove decimal points from y-axis values
+        },
+      },
+    },
+  };
+
+  const chartData1 = {
+    labels: eventNames,
+    datasets: [
+      {
+        label: "Number of Followers",
+        data: followers,
+        backgroundColor: "rgba(75, 192, 192, 0.6)", // Customize the bar color
+      },
+    ],
+  };
+
+  const chartOptions1 = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          precision: 0, // Remove decimal points from y-axis values
+        },
+      },
+    },
+  };
+
   return (
     <div className="container mx-auto px-10">
       <h1 className="text-3xl font-bold py-6">All Event Dashboard</h1>
@@ -111,8 +241,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-sm text-gray-500">Earning</p>
-            <p className=" text-xl font-semibold">Total</p>
-            <p className="text-sm">37.5 % this month</p>
+            <p className=" text-xl font-semibold">{totalSale} ฿</p>
           </div>
         </div>
 
@@ -122,8 +251,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-sm text-gray-500">Refund</p>
-            <p className=" text-xl font-semibold">Total</p>
-            <p className="text-sm">37.5 % this month</p>
+            <p className=" text-xl font-semibold">{totalRefund} ฿</p>
           </div>
         </div>
 
@@ -133,9 +261,22 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-sm text-gray-500">Total Sales</p>
-            <p className=" text-xl font-semibold">Total</p>
-            <p className="text-sm">37.5 % this month</p>
+            <p className=" text-xl font-semibold">
+              {totalSale - totalRefund} ฿
+            </p>
           </div>
+        </div>
+      </div>
+      <div className="pt-4">
+        <h2 className=" text-lg py-2 px-2 font-semibold">Top 5 Sale Popular</h2>
+        <div>
+          <Bar height={100} data={chartData} options={chartOptions} />
+        </div>
+        <div>
+          <h2 className=" text-lg py-2 px-2 font-semibold">
+            Top 5 Events by Number of Followers
+          </h2>
+          <Bar height={100} data={chartData1} options={chartOptions1} />
         </div>
       </div>
 

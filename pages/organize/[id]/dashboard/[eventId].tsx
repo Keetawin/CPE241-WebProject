@@ -520,6 +520,7 @@ export default function EventDashBoard() {
     // Call the function to fetch event followers
     fetchEventFollowers();
   }, []);
+
   return (
     <main>
       <div className="container mx-auto px-10">
