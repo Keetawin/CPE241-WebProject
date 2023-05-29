@@ -79,7 +79,7 @@ export default function Navbar() {
   return (
     <header className="bg-[#060047]">
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+        className="mx-auto flex max-w-7xl items-center justify-between py-2 "
         aria-label="Global"
       >
         <div className="flex lg:flex-1">
@@ -154,7 +154,7 @@ export default function Navbar() {
 
             {session && session?.user?.user_role === "Admin" && (
               <Link href="/admin">
-                <span className="font-semibold text-xl text-white">Admin</span>
+                <span className="font-semibold text-xl text-white align-text-center">Admin</span>
               </Link>
             )}
           </div>
@@ -174,8 +174,18 @@ export default function Navbar() {
           {session?.user?.user_id && (
             <Popover className="relative">
               {({ open }) => (
-                <>
-                  <Popover.Button className="bg-gray-800 text-white px-3 py-2 rounded-md flex items-center justify-center">
+                <div className="flex">
+                  <div className="flex lg:flex lg:justify-end">
+                    <div className="flex items-center justify-center mt-2">
+                      <Link href="/users/booking">
+                        <Button
+                          startIcon={<ShoppingCartIcon style={{ fontSize: 30 }} />}
+                          style={{ color: "#FFFFFF", marginLeft: "30px" }}
+                        />
+                      </Link>
+                    </div>
+                  </div>
+                  <Popover.Button className="bg-[#414167] text-white px-3 py-2 rounded-md flex items-center justify-center">
                     <Image
                       className="rounded-full"
                       src={session?.user?.image}
@@ -237,7 +247,7 @@ export default function Navbar() {
                       </div>
                     </Popover.Panel>
                   </Transition>
-                </>
+                </div>
               )}
             </Popover>
             // <Link
@@ -250,18 +260,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {session && (
-          <div className="flex lg:flex lg:justify-end">
-            <div className="flex items-center justify-center mt-2">
-              <Link href="/users/booking">
-                <Button
-                  startIcon={<ShoppingCartIcon style={{ fontSize: 30 }} />}
-                  style={{ color: "#FFFFFF", marginLeft: "30px" }}
-                />
-              </Link>
-            </div>
-          </div>
-        )}
       </nav>
       <Dialog
         as="div"
