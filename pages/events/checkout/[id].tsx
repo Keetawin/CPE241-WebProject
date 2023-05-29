@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { v4 } from "uuid";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -22,7 +21,7 @@ const CheckoutPage = () => {
     const fetchPaymentData = async () => {
       try {
         const response = await axios.get(
-          `https://ticketapi.fly.dev/get_user_payment?user_id=${id}`
+          `https://ticketapi.fly.dev/get_user_payment?user_id=${session?.user?.user_id}`
         );
         setPaymentData(response.data);
       } catch (error) {
@@ -35,10 +34,6 @@ const CheckoutPage = () => {
 
   const selectedTickets = ticketType ? JSON.parse(ticketType) : [];
   const [refundableChecked, setRefundableChecked] = useState(false);
-  const uuid = v4();
-
-  // Remove hyphens and convert to decimal number
-  const numericUUID = parseInt(uuid.replace(/-/g, ""), 16);
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
@@ -71,56 +66,9 @@ const CheckoutPage = () => {
 
     if (paymentOption === "mastercard") {
       if (mastercardNumber && cardname && expirationDate && cvv) {
-        // Create an array of ticket objects
-        const ticketsData = selectedTickets.map((ticket, index) => {
-          if (ticket.quantity !== 0) {
-            return {
-              name: ticket.name,
-              price: ticket.price,
-              vat: (ticket.price * 7) / 100,
-              total: ticket.price * 1.07 * ticket.quantity,
-            };
-          }
-          return null;
-        });
-
-        // Calculate the total amount
-        const amount = ticketsData.reduce(
-          (total, ticket) => total + ticket.total,
-          0
-        );
-
-        // Create the request data object
-        const requestData = {
-          payment_info_id: selectedPaymentInfo?.payment_info_id, // Replace with the actual payment info ID
-          amount: amount,
-          booking_id: 1, // Replace with the actual booking ID
-        };
-
-        // Send the requestData object to the backend API
-        axios
-          .post("https://ticketapi.fly.dev/confirm_payment", requestData)
-          .then((response) => {
-            // Handle the response from the API
-            console.log(response.data);
-            alert("Mastercard payment processed successfully.");
-          })
-          .catch((error) => {
-            // Handle errors
-            console.error("Error processing payment:", error);
-          });
+        alert("Mastercard payment processed successfully.");
       } else {
         alert("Please fill in all required fields for Mastercard payment.");
-      }
-    } else if (paymentOption === "promptpay") {
-      if (promptPayNumber) {
-        const amount = calculateTotalPrice();
-        const qrCodeContent = `promptpay:${promptPayNumber}?amount=${amount}`;
-        const qrCodeSize = 200;
-        const qrCodeImage = <QRCode value={qrCodeContent} size={qrCodeSize} />;
-        alert(qrCodeImage);
-      } else {
-        alert("Please fill in all required fields for PromptPay payment.");
       }
     }
   };
@@ -175,9 +123,9 @@ const CheckoutPage = () => {
     .replace(/(\d{2})(\d{2})/, "$1/$2");
 
   return (
-    <div className="container mx-auto px-10">
+    <div className="mt-10 mx-16 text-left">
       <h2 className="text-2xl font-bold py-4">Ticket</h2>
-      <div className="border-2 border-gray-200 p-4 bg-white shadow rounded-lg">
+      <div className="border-2 border-gray-200 p-4 bg-white shadow rounded">
         <ul>
           {selectedTickets.map((ticket, index) => {
             if (ticket.quantity !== 0) {
@@ -199,29 +147,33 @@ const CheckoutPage = () => {
         </ul>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-8">
         <h2 className="text-2xl font-bold py-4">Choose Refundable Tickets</h2>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            className="form-checkbox"
-            checked={refundableChecked}
-            onChange={() => setRefundableChecked(!refundableChecked)}
-          />
-          <span className="text-xl font-semibold ml-2">Refundable Tickets</span>
+        <input
+          type="checkbox"
+          id="refundableCheckbox"
+          checked={refundableChecked}
+          onChange={() => setRefundableChecked(!refundableChecked)}
+          className="mr-2"
+        />
+        <label
+          htmlFor="refundableCheckbox"
+          className="text-xl font-semibold py-4"
+        >
+          Refundable Tickets
         </label>
-        <span className="text-xl font-semibold ml-8">
+        <span className="text-xl font-semibold py-4">
           {calculateTotalPrice().tax}
         </span>
-        <p className="mt-2 ml-8 mr-52">
+        <p className="mt-2">
           Lorem ipsum dolor sit amet consectetur. Libero malesuada elit in arcu
           placerat. Elementum suspendisse pellentesque sed sit id vitae
           consequat. Quis turpis
         </p>
       </div>
 
-      <h2 className="text-2xl font-bold py-4">Voucher</h2>
-      <div className="border-2 border-gray-200 p-4 bg-white shadow rounded-lg">
+      <h2 className="mt-8 text-2xl font-bold py-4">Voucher</h2>
+      <div className="border-2 border-gray-200 p-4 bg-white shadow rounded">
         {voucher ? (
           <>
             {voucherData.length > 0 ? (
@@ -238,43 +190,41 @@ const CheckoutPage = () => {
               </>
             ) : (
               <>
-                <p className="mt-2 ml-4">Voucher Code:</p>
-                <div className="flex items-center mb-2">
+                <p>Voucher Code:</p>
+                <div className="flex">
                   <input
                     type="text"
                     value={voucherCode}
                     onChange={(e) => setVoucherCode(e.target.value)}
-                    className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 ml-4 rounded-md"
-                    placeholder="Add voucher"
+                    className="border-2 border-gray-300 bg-white rounded px-2 py-1 mr-2"
                   />
                   <button
                     type="button"
                     onClick={handleVoucherRedeem}
-                    className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-small py-0.5 px-5 ml-4 rounded-full"
+                    className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-semibold py-1 px-4 rounded"
                   >
                     Add
                   </button>
                 </div>
-
                 <p>No voucher details available</p>
               </>
             )}
           </>
         ) : (
           <>
-            <p className="mt-2 ml-4">Voucher Code:</p>
-            <div className="flex items-center mb-2">
+            <p>Voucher Code:</p>
+            <div className="flex">
               <input
                 type="text"
                 value={voucherCode}
                 onChange={(e) => setVoucherCode(e.target.value)}
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 ml-4 rounded-md"
-                placeholder="Add voucher"
+                className="border-2 border-gray-300 bg-white rounded px-2 py-1 mr-2"
+                placeholder=" Add voucher"
               />
               <button
                 type="button"
                 onClick={handleVoucherRedeem}
-                className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-small py-0.5 px-5 ml-4 rounded-full"
+                className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-semibold py-1 px-4 rounded"
               >
                 Add
               </button>
@@ -288,7 +238,7 @@ const CheckoutPage = () => {
         <h2 className="text-red-600 text-xl font-semibold py-4">
           Credit card / Debit Card
         </h2>
-        <h1 className="ml-4 mt-2">Existing Card</h1>
+        <h1 className="text-xl font-semibold mt-2">Existing Card</h1>
         <select
           value={paymentOption}
           onChange={(e) => {
@@ -297,7 +247,7 @@ const CheckoutPage = () => {
             );
             setSelectedPaymentInfo(selectedPaymentInfo);
           }}
-          className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 ml-4 rounded-md w-60"
+          className="border-2 border-gray-300 bg-white rounded px-2 py-1 mt-2"
         >
           <option value="mastercard">Credit Card / Debit Card</option>
           {paymentData
@@ -312,8 +262,8 @@ const CheckoutPage = () => {
             ))}
         </select>
         <div>
-          <div className="mt-4 ml-4">
-            <label>Card Number</label>
+          <div className="mt-4">
+            <label className="font-semibold">Card Number</label>
             <div>
               <input
                 type="text"
@@ -326,12 +276,12 @@ const CheckoutPage = () => {
                 }
                 maxLength={19}
                 placeholder="0000 0000 0000 0000"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-60"
+                className="border-2 border-gray-300 bg-white rounded px-2 py-1"
               />
             </div>
           </div>
-          <div className="mt-4 ml-4">
-            <label>Card Name</label>
+          <div className="mt-4">
+            <label className="font-semibold">Card Name</label>
             <div>
               <input
                 type="text"
@@ -343,14 +293,14 @@ const CheckoutPage = () => {
                   })
                 }
                 placeholder="Card Name"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-60"
+                className="border-2 border-gray-300 bg-white rounded px-2 py-1"
               />
             </div>
           </div>
-          <div className="mt-4 ml-4">
-            <label>Expire Date</label>
-
-            <div>
+          <div className="mt-4">
+            <label className="font-semibold">Card Expiry Date</label>
+            <label className="float-right">CVV</label>
+            <div className="flex">
               <input
                 type="text"
                 value={expirationDate}
@@ -362,42 +312,39 @@ const CheckoutPage = () => {
                 }
                 maxLength={5}
                 placeholder="MM/YY"
-                className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-36"
+                className="border-2 border-gray-300 bg-white rounded px-2 py-1 mr-2"
               />
-
-              <div className="flex flex-col mt-2">
-                <label>CVV</label>
-                <input
-                  type="text"
-                  value={cvv}
-                  onChange={(e) => setCVV(e.target.value)}
-                  maxLength={3}
-                  className="border-2 border-gray-300 bg-white py-2 px-4 mt-2 rounded-md w-20"
-                />
-              </div>
+              <input
+                type="text"
+                value={cvv}
+                onChange={(e) => setCVV(e.target.value)}
+                maxLength={3}
+                className="border-2 border-gray-300 bg-white rounded px-2 py-1"
+              />
             </div>
           </div>
         </div>
       </div>
+
       <div className="mt-8">
         <h2 className="text-2xl font-bold py-4">Review Order Summary</h2>
-        <div className="mt-2">
-          <div className="border-2 border-gray-200 p-4 bg-white shadow rounded-lg">
-            <div className="flex justify-between mb-2">
+        <div className="mt-6">
+          <div className="border-2 border-gray-200 p-4 bg-white shadow rounded">
+            <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Item</span>
               <span className="font-semibold">Price</span>
               <span className="font-semibold">Fee (Incl. VAT)</span>
               <span className="font-semibold">Quantity</span>
               <span className="font-semibold">Subtotal</span>
             </div>
-            <hr className="my-2" />
-            <ul className="mt-2">
+            <hr className="border-gray-400 my-4" />
+            <ul>
               {selectedTickets.map((ticket, index) => {
                 if (ticket.quantity !== 0) {
                   return (
                     <li
                       key={index}
-                      className="flex justify-between items-center my-2"
+                      className="flex justify-between items-center mb-2"
                     >
                       <span className="font-semibold">{ticket.name}</span>
                       <span className="font-semibold">{ticket.price}</span>
@@ -414,22 +361,22 @@ const CheckoutPage = () => {
                 return null;
               })}
             </ul>
-            <hr className="my-2" />
-            <div className="flex justify-end">
+            <hr className="border-gray-400 mt-4 mb-4" />
+            <div className="flex justify-between">
               <span className="font-semibold">Subtotal</span>
-              <span className="font-semibold ml-2">
+              <span className="font-semibold">
                 {calculateTotalPrice().subtotal}
               </span>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-between">
               <span className="font-semibold">Refundable Tickets</span>
-              <span className="font-semibold ml-2">
+              <span className="font-semibold">
                 {calculateTotalPrice().tax - calculateTotalPrice().totalPrice}
               </span>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-between mt-2">
               <span className="text-2xl font-semibold">Grand Total</span>
-              <span className="text-red-600 text-xl font-semibold ml-2">
+              <span className="text-red-600 text-xl font-semibold">
                 {calculateTotalPrice().grandtotal}
               </span>
             </div>
@@ -439,7 +386,7 @@ const CheckoutPage = () => {
 
       <button
         onClick={handlePaymentSubmit}
-        className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-1 px-6 rounded-full mt-6 mb-4 ml-auto"
+        className="bg-[#E90064] hover:bg-[#c60056e6] text-white font-bold py-1 px-6 rounded-full mt-8"
       >
         Confirm
       </button>

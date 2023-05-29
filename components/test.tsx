@@ -10,7 +10,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import axios from "axios";
 
 type Props = {
   ticketid: string;
@@ -21,10 +20,9 @@ type Props = {
   eventStart: string;
   eventEnd: string;
   refund: string;
-  isrefund: string;
 };
 
-export default function ShowTicket({
+export default function Test({
   ticketid,
   eventid,
   img,
@@ -34,7 +32,6 @@ export default function ShowTicket({
   eventEnd,
   refund,
 }) {
-  const [isRefund, setIsRefund] = useState(false);
   const [open, setOpen] = useState(false);
   const session = useSession();
   const handleClickOpen = () => {
@@ -44,14 +41,7 @@ export default function ShowTicket({
     setOpen(false);
   };
 
-  const handleRefund = (ticketid: number) => {
-    axios
-      .put(`https://ticketapi.fly.dev/refund_ticket/${ticketid}`)
-      .then(() => {
-        setIsRefund(true);
-        handleClose();
-      });
-  };
+  const handleDelete = (payment_info_id: number) => {};
 
   return (
     <main>
@@ -99,11 +89,11 @@ export default function ShowTicket({
                 <DialogActions>
                   <Button onClick={handleClose}>Cancle</Button>
                   <Button
-                    onClick={() => handleRefund(ticketid)}
+                    onClick={() => handleDelete(ticketid)}
                     autoFocus
                     style={{ color: "#E90064" }}
                   >
-                    Refund
+                    Delete
                   </Button>
                 </DialogActions>
               </Dialog>

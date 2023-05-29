@@ -24,7 +24,7 @@ type Props = {
   isrefund: string;
 };
 
-export default function ShowTicket({
+export default function booking({
   ticketid,
   eventid,
   img,

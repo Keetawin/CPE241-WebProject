@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Link } from "@nextui-org/react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Button } from "@mui/material";
 import {
   ArrowPathIcon,
   Bars3Icon,
@@ -156,6 +158,7 @@ export default function Navbar() {
               </Link>
             )}
           </div>
+
           {!session && (
             <Link
               href="#"
@@ -205,6 +208,12 @@ export default function Navbar() {
                           className="popover-dropdown-item min-w-full"
                         >
                           My Tickets
+                        </Link>
+                        <Link
+                          href="/users/booking"
+                          className="popover-dropdown-item min-w-full"
+                        >
+                          Booking
                         </Link>
                         <Link
                           href="/users/follow_event"

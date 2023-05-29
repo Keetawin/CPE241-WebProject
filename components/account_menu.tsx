@@ -6,6 +6,7 @@ import {
   FaBuilding,
   FaUserCog,
   FaCreditCard,
+  FaBookOpen,
 } from "react-icons/fa";
 const MenuBar = () => {
   return (
@@ -20,6 +21,19 @@ const MenuBar = () => {
               >
                 <FaTicketAlt className="w-6 h-6 text-black transition duration-75 " />
                 <span className="ml-3 text-black font-medium">Tickets</span>
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/users/booking"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-slate-100"
+              >
+                <FaBookOpen className="flex-shrink-0 w-6 h-6 text-black transition duration-75 " />
+
+                <span className="flex-1 ml-3 text-black font-medium whitespace-nowrap">
+                  Booking
+                </span>
               </Link>
             </li>
 
