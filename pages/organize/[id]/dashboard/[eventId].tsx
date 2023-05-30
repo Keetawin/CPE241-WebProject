@@ -61,6 +61,22 @@ interface EventData {
   total_sale: string;
 }
 
+type VoucherData = {
+  expire_date: string;
+  voucher_code: string;
+  event_id: number;
+  amount: number;
+  usage_limit: number;
+};
+
+const initialVoucherData: VoucherData = {
+  expire_date: "",
+  voucher_code: "",
+  event_id: 0,
+  amount: 0,
+  usage_limit: 0,
+};
+
 export default function EventDashBoard() {
   const router = useRouter();
   const { id, eventId } = router.query;
@@ -77,6 +93,71 @@ export default function EventDashBoard() {
   const [getTable, setGetTable] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [numberOfFollowers, setNumberOfFollowers] = useState(0);
+  const [isOpen2, setIsOpen2] = useState(false);
+  const [voucherData, setVoucherData] = useState(initialVoucherData);
+  const [vouchers, setVouchers] = useState([]);
+
+  useEffect(() => {
+    const fetchEventVouchers = async (eventId) => {
+      try {
+        const response = await axios.get(
+          `https://ticketapi.fly.dev/event_voucher?event_id=${eventId}`
+        );
+        const vouchersData = response.data;
+
+        // Update the state with the fetched vouchers
+        setVouchers(vouchersData);
+      } catch (error) {
+        console.error("Error fetching event vouchers:", error);
+      }
+    };
+
+    // Fetch the vouchers when the component mounts or when the event ID changes
+    fetchEventVouchers(eventId);
+  }, [eventId]);
+
+  const openModal2 = () => {
+    setIsOpen2(true);
+  };
+
+  const closeModal2 = () => {
+    setIsOpen2(false);
+  };
+
+  const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVoucherData({
+      ...voucherData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleAddVoucher = () => {
+    const voucherDataWithEventId = {
+      ...voucherData,
+      event_id: eventId,
+    };
+
+    axios
+      .post(
+        "https://ticketapi.fly.dev/create_event_voucher",
+        voucherDataWithEventId
+      )
+      .then((response) => {
+        // Handle the API response if needed
+        console.log(response.data);
+
+        // Reset the form or update the state as needed
+        setVoucherData(initialVoucherData);
+
+        // Refresh the page
+        window.location.reload();
+      })
+      .catch((error) => {
+        // Handle any errors that occur during the API call
+        console.error("Error creating event voucher:", error);
+      });
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -523,7 +604,7 @@ export default function EventDashBoard() {
 
   return (
     <main>
-      <div className="container mx-auto px-10">
+      <div className="container mx-auto mb-2 px-10">
         {isLoading ? (
           <div className="flex justify-center items-center h-screen">
             <CircularProgress color="inherit" />
@@ -761,6 +842,7 @@ export default function EventDashBoard() {
                               >
                                 Seat Type Name
                               </label>
+
                               <TextField
                                 id="seat_type"
                                 name="seat_type"
@@ -1028,6 +1110,170 @@ export default function EventDashBoard() {
                 </p>
               )}
             </div>
+
+            <div className="flex justify-between mt-1 pt-4">
+              <h1 className="text-2xl font-bold">Add Voucher</h1>
+              <button
+                className="px-2 py-2 rounded bg-[#E90064] hover:bg-[#c60056e6] text-white font-medium text-base"
+                onClick={openModal2}
+              >
+                Add Voucher
+              </button>
+            </div>
+
+            <Transition appear show={isOpen2} as={React.Fragment}>
+              <Dialog as="div" className="relative z-10" onClose={closeModal2}>
+                <Transition.Child
+                  as={React.Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <div className="fixed inset-0 bg-black bg-opacity-25" />
+                </Transition.Child>
+
+                <div className="fixed inset-0 overflow-y-auto">
+                  <div className="flex min-h-full items-center justify-center p-4 text-center">
+                    <Transition.Child
+                      as={React.Fragment}
+                      enter="ease-out duration-300"
+                      enterFrom="opacity-0 scale-95"
+                      enterTo="opacity-100 scale-100"
+                      leave="ease-in duration-200"
+                      leaveFrom="opacity-100 scale-100"
+                      leaveTo="opacity-0 scale-95"
+                    >
+                      <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-lg font-semibold leading-6 text-gray-900 mb-4"
+                        >
+                          Add Voucher
+                        </Dialog.Title>
+                        <form>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="voucher_code"
+                              className="text-[#060047] font-medium mt-1 mr-2 sm:mt-5 text-sm sm:text-md"
+                            >
+                              Voucher Code
+                            </label>
+                            <br />
+                            <input
+                              id="voucher_code"
+                              name="voucher_code"
+                              type="text"
+                              value={voucherData.voucher_code}
+                              required
+                              className="border w-full rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-[#060047] focus:border-transparent"
+                              onChange={handleChange2}
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <label
+                              htmlFor="amount"
+                              className="text-[#060047] font-medium mt-1 mr-2 sm:mt-5 text-sm sm:text-md"
+                            >
+                              Amount
+                            </label>
+                            <br />
+                            <input
+                              id="amount"
+                              name="amount"
+                              type="number"
+                              value={voucherData.amount}
+                              required
+                              className="border w-full rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-[#060047] focus:border-transparent"
+                              onChange={handleChange2}
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <label
+                              htmlFor="usage_limit"
+                              className="text-[#060047] font-medium mt-1 mr-2 sm:mt-5 text-sm sm:text-md"
+                            >
+                              Usage Limit
+                            </label>
+                            <br />
+                            <input
+                              id="usage_limit"
+                              name="usage_limit"
+                              type="number"
+                              value={voucherData.usage_limit}
+                              required
+                              className="border w-full rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-[#060047] focus:border-transparent"
+                              onChange={handleChange2}
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <label
+                              htmlFor="expire_date"
+                              className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
+                            >
+                              Expire Date
+                            </label>
+                            <br />
+                            <input
+                              id="expire_date"
+                              name="expire_date"
+                              type="date"
+                              value={voucherData.expire_date}
+                              required
+                              className="border w-full rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-[#060047] focus:border-transparent"
+                              onChange={handleChange2}
+                            />
+                          </div>
+
+                          {/* Add more input fields for event_id, amount, and usage_limit */}
+
+                          <div className="mt-6">
+                            <button
+                              type="button"
+                              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                                !voucherData.voucher_code ||
+                                !voucherData.expire_date
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#060047] hover:bg-[#E90064]"
+                              }`}
+                              onClick={handleAddVoucher}
+                              disabled={
+                                !voucherData.voucher_code ||
+                                !voucherData.expire_date
+                              }
+                            >
+                              Add Voucher
+                            </button>
+                          </div>
+                        </form>
+                      </Dialog.Panel>
+                    </Transition.Child>
+                  </div>
+                </div>
+              </Dialog>
+            </Transition>
+            {vouchers.map((voucher) => (
+              <div key={voucher.voucher_id} className="border rounded p-4 my-4">
+                <p className="font-bold">Voucher ID: {voucher.voucher_id}</p>
+                <p>
+                  Expire Date:{" "}
+                  {dayjs(voucher.expire_date)
+                    .locale("en")
+                    .format("D MMMM YYYY")}
+                </p>
+
+                <p>Voucher Code: {voucher.voucher_code}</p>
+                <p>Event ID: {voucher.event_id}</p>
+                <p>Amount: {voucher.amount}</p>
+                <p>Status: {voucher.status ? "Active" : "Inactive"}</p>
+                <p>Usage Limit: {voucher.usage_limit}</p>
+              </div>
+            ))}
           </>
         )}
       </div>
