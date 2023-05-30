@@ -113,11 +113,11 @@ export default function ShowTicket({
                 aria-describedby="alert-dialog-description"
               >
                 <DialogTitle id="alert-dialog-title">
-                  {"Delete this payment information?"}
+                  {"Refund this ticket?"}
                 </DialogTitle>
                 <DialogContent>
                   <DialogContentText id="alert-dialog-description">
-                    delete this payment information permarnently
+                    Refund to return ticket and get your money
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
