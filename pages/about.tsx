@@ -8,10 +8,11 @@ export default function About() {
         <article>
           <div className="underline-space mx-12">
             <p className="mb-4">
-              The "Evento" ticketing system web app project was created as part
-              of the CPE241 Database System subject. It is a collaborative
-              effort developed by a team of students with the following student
-              IDs: 64070501005, 64070501006, 64070501042, and 64070501087.
+              The &quot;Evento&quot; ticketing system web app project was
+              created as part of the CPE241 Database System subject. It is a
+              collaborative effort developed by a team of students with the
+              following student IDs: 64070501005, 64070501006, 64070501042, and
+              64070501087.
             </p>
 
             <p className="mb-4">
@@ -36,21 +37,21 @@ export default function About() {
 
             <p className="mb-4">
               PostgreSQL, a powerful open-source relational database management
-              system, is utilized as the project's database solution. It offers
-              features such as data integrity, transaction management, and
-              scalability, making it suitable for storing and retrieving event
-              and ticketing-related data.
+              system, is utilized as the project&apos;s database solution. It
+              offers features such as data integrity, transaction management,
+              and scalability, making it suitable for storing and retrieving
+              event and ticketing-related data.
             </p>
 
             <p className="mb-4">
-              The "Evento" ticketing system web app incorporates various
-              features to enhance the user experience and facilitate efficient
-              event management. This includes the ability to create and manage
-              events, configure seating arrangements, set ticket prices and
-              availability, and generate reports for sales and attendance. The
-              application provides both user and administrator interfaces,
-              allowing event organizers to manage events and ticket inventory
-              effectively.
+              The &quot;Evento&quot; ticketing system web app incorporates
+              various features to enhance the user experience and facilitate
+              efficient event management. This includes the ability to create
+              and manage events, configure seating arrangements, set ticket
+              prices and availability, and generate reports for sales and
+              attendance. The application provides both user and administrator
+              interfaces, allowing event organizers to manage events and ticket
+              inventory effectively.
             </p>
 
             <p className="mb-4">
@@ -63,11 +64,11 @@ export default function About() {
             </p>
 
             <p>
-              The "Evento" ticketing system web app project showcases the team's
-              understanding and application of database system concepts in
-              real-world scenarios. It demonstrates the capabilities of Next.js,
-              Node.js, TypeScript, and PostgreSQL in creating a reliable,
-              scalable, and user-friendly ticketing system solution.
+              The &quot;Evento&quot; ticketing system web app project showcases
+              the team&apos;s understanding and application of database system
+              concepts in real-world scenarios. It demonstrates the capabilities
+              of Next.js, Node.js, TypeScript, and PostgreSQL in creating a
+              reliable, scalable, and user-friendly ticketing system solution.
             </p>
           </div>
         </article>
