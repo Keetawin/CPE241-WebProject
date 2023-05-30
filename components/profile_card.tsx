@@ -17,7 +17,7 @@ const ProfileCard = () => {
         </div>
         <div className=" flex flex-col items-center">
           <h4 className="text-xl font-bold text-black">
-            {session?.user?.name}
+            {session?.user?.f_name} {session?.user?.l_name}
           </h4>
           <p className="text-base font-normal text-gray-600">
             {session?.user?.email}
