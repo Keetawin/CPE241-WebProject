@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   const [organizeData, setOrganizeData] = useState({
     organize_id: id,
-    user_id: "",
+    email: "",
   });
   const [members, setMembers] = useState([]);
   const [eventData1, setEventData1] = useState<EventData[]>([]);
@@ -98,35 +98,39 @@ export default function Dashboard() {
   };
 
   const handleAddMember = () => {
-    const { user_id } = organizeData;
+    const { email } = organizeData;
 
-    // Parse the user_id as an integer
-    const parsedUserId = parseInt(user_id, 10);
-    const parsedOrganizeId = parseInt(id, 10);
-
-    // Make the API call with the parsed user_id
-    axios
-      .post("https://ticketapi.fly.dev/add_member", {
-        user_id: parsedUserId,
-        organize_id: parsedOrganizeId,
-      })
-      .then((response) => {
-        // Handle the API response if needed
-        console.log(response.data);
-
-        // Reset the form or update the state as needed
-        setOrganizeData({
-          ...organizeData,
-          user_id: "",
+    axios.get(`https://ticketapi.fly.dev/get_user?email=${email}`).then((res)=>{
+      // Parse the user_id as an integer
+      const parsedUserId = parseInt(res.data[0].user_id, 10);
+      const parsedOrganizeId = parseInt(id, 10);
+      // Make the API call with the parsed user_id
+      axios
+        .post("https://ticketapi.fly.dev/add_member", {
+          user_id: parsedUserId,
+          organize_id: parsedOrganizeId,
+        })
+        .then((response) => {
+          // Handle the API response if needed
+          console.log(response.data);
+  
+          // Reset the form or update the state as needed
+          setOrganizeData({
+            ...organizeData,
+            email: "",
+          });
+  
+          // Refresh the page
+          window.location.reload();
+        })
+        .catch((error) => {
+          // Handle any errors that occur during the API call
+          console.error("Error adding member:", error);
         });
 
-        // Refresh the page
-        window.location.reload();
-      })
-      .catch((error) => {
-        // Handle any errors that occur during the API call
-        console.error("Error adding member:", error);
-      });
+    })
+
+
   };
 
   useEffect(() => {
@@ -388,13 +392,13 @@ export default function Dashboard() {
                         htmlFor="name"
                         className="text-[#060047] font-medium mt-1 sm:mt-5 text-sm sm:text-md"
                       >
-                        User ID
+                        Email
                       </label>
                       <TextField
                         id="name"
-                        name="user_id"
+                        name="email"
                         type="text"
-                        value={organizeData.user_id}
+                        value={organizeData.email}
                         required
                         sx={{ width: "40ch" }}
                         variant="outlined"
@@ -406,12 +410,12 @@ export default function Dashboard() {
                       <button
                         type="button"
                         className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                          !organizeData.user_id
+                          !organizeData.email
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-[#060047] hover:bg-[#E90064]"
                         }`}
                         onClick={handleAddMember}
-                        disabled={!organizeData.user_id}
+                        disabled={!organizeData.email}
                       >
                         Add Member
                       </button>
