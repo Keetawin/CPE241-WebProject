@@ -1,42 +1,15 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Evento
 
-## Getting Started
+The "Evento" ticketing system web app project was created as part of the CPE241 Database System subject. It is a collaborative effort developed by a team of students with the following student IDs: 64070501005, 64070501006, 64070501042, and 64070501087.
 
-First, run the development server:
+The project aims to provide a comprehensive and efficient ticketing system solution for event management. Leveraging the power of modern web technologies, the frontend of the application is built using Next.js, a popular framework for developing server-rendered React applications. The frontend implements a user-friendly interface that allows users to browse events, view event details, select seats, and purchase tickets seamlessly.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+On the backend, Node.js is used as the server-side runtime environment, providing a robust foundation for handling API requests, managing data, and executing business logic. TypeScript, a statically typed superset of JavaScript, is the chosen programming language for both the frontend and backend development, ensuring type safety and improved code maintainability.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+PostgreSQL, a powerful open-source relational database management system, is utilized as the project's database solution. It offers features such as data integrity, transaction management, and scalability, making it suitable for storing and retrieving event and ticketing-related data.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+The "Evento" ticketing system web app incorporates various features to enhance the user experience and facilitate efficient event management. This includes the ability to create and manage events, configure seating arrangements, set ticket prices and availability, and generate reports for sales and attendance. The application provides both user and administrator interfaces, allowing event organizers to manage events and ticket inventory effectively.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Throughout the development process, the team prioritized considerations such as data security, performance optimization, and user experience. Measures were taken to ensure secure handling of user information during the ticket purchasing process, and optimizations were implemented to provide a smooth and responsive application performance.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-=======
-# CPE241-WebProject
->>>>>>> 534e1c3bb2ab737f8447054ffeb7118315a91356
+The "Evento" ticketing system web app project showcases the team's understanding and application of database system concepts in real-world scenarios. It demonstrates the capabilities of Next.js, Node.js, TypeScript, and PostgreSQL in creating a reliable, scalable, and user-friendly ticketing system solution.
